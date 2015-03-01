@@ -1,0 +1,5 @@
+[package]
+
+name = "hsk_flashcards"
+version = "0.0.1"
+authors = ["Kerrick Staley <kerrick@kerrickstaley.com>"]
