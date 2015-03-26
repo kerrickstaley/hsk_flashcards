@@ -3,3 +3,10 @@
 name = "hsk_flashcards"
 version = "0.0.1"
 authors = ["Kerrick Staley <kerrick@kerrickstaley.com>"]
+
+[dependencies]
+
+regex = "0.1.16"
+regex_macros = "0.1.10"
+rusqlite = "0.0.10"
+rust-crypto = "0.2.18"
