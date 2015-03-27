@@ -14,11 +14,11 @@ struct HskWord {
   level: u32,
 }
 
-struct CcedictWord {
-  trad: String,
-  simp: String,
-  pinyin: String,
-  defs: Vec<String>,
+struct CcedictWord<'a> {
+  trad: &'a str,
+  simp: &'a str,
+  pinyin: &'a str,
+  defs: Vec<&'a str>,
 }
 
 fn get_hsk_words() -> Vec<HskWord> {
@@ -34,8 +34,7 @@ fn get_hsk_words() -> Vec<HskWord> {
   rv
 }
 
-fn parse_dict(dict : &str) -> Vec<CcedictWord> {
-  // this method takes 45 seconds, not sure why (regexes are slow maybe?)
+fn parse_dict<'a>(dict: &'a str) -> Vec<CcedictWord<'a>> {
   let re = regex!(r"(.+?) (.+?) \[(.+?)\] /(.+?/)+?");
   let mut rv = Vec::new();
   for line in dict.split("\n") {
@@ -43,12 +42,12 @@ fn parse_dict(dict : &str) -> Vec<CcedictWord> {
       Some(cap) => {
         let mut defs = Vec::new();
         for i in 4..cap.len() {
-          defs.push(cap.at(i).unwrap_or("").to_string());
+          defs.push(cap.at(i).unwrap_or(""));
         }
         rv.push(
-            CcedictWord{trad: cap.at(1).unwrap_or("").to_string(),
-                        simp: cap.at(2).unwrap_or("").to_string(),
-                        pinyin: cap.at(3).unwrap_or("").to_string(),
+            CcedictWord{trad: cap.at(1).unwrap_or(""),
+                        simp: cap.at(2).unwrap_or(""),
+                        pinyin: cap.at(3).unwrap_or(""),
                         defs: defs});
       },
       None => (),
@@ -80,15 +79,78 @@ fn guid_from_str(s : &str) -> String {
 
   // convert to base91
   let BASE91_TABLE = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '!', '#', '$', '%', '&', '(', ')', '*', '+', ',', '-', '.', '/', ':', ';', '<', '=', '>', '?', '@', '[', ']', '^', '_', '`', '{', '|', '}', '~'];
-  //concat!(
-  //    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ",
-  //    "0123456789!#$%&()*+,-./:;<=>?@[]^_`{|}~").chars().collect();
   let mut rv_reversed = String::with_capacity(10);
   while val > 0 {
     rv_reversed.push(BASE91_TABLE[(val % 91) as usize]);
     val /= 91;
   }
   rv_reversed.as_slice().chars().rev().collect()
+}
+
+fn toned_char(c: char, tone: usize) -> char {
+  let data = [
+      ['ā', 'á', 'ǎ', 'à', 'a'],
+      ['ē', 'é', 'ě', 'è', 'e'],
+      ['ī', 'í', 'ǐ', 'ì', 'i'],
+      ['ō', 'ó', 'ǒ', 'ò', 'o'],
+      ['ū', 'ú', 'ǔ', 'ù', 'u'],
+      ['ǖ', 'ǘ', 'ǚ', 'ǜ', 'ü'],
+  ];
+
+  for row in data.iter() {
+    if row[4] == c {
+      return row[tone - 1];
+    }
+  }
+
+  // shouldn't reach this point...
+  println!("WTF {}", c);
+  c
+}
+
+fn prettify_pinyin(s: &str) -> String {
+  let mut rv = String::new();
+  let mut first = true;
+  for syl in s.split(" ") {
+    if first {
+      first = false
+    } else {
+      rv.push(' ')
+    }
+
+    let last_byte = s.as_bytes()[s.len() - 1];
+    if ('1' as u8) > last_byte || ('5' as u8) < last_byte {
+      rv.push_str(syl);
+      continue;
+    }
+
+    // we know that syllable is ASCII
+    let tone: usize = syl[syl.len() - 1..].parse::<usize>().unwrap_or(0);
+    let mut toned = false;
+    for i in 0..syl.len() - 1 {
+      let mut curr = syl.char_at(i);
+      let next = syl.char_at(i + 1);
+      if curr == 'u' && next == ':' {
+        continue;
+      }
+      if curr == ':' {
+        curr = 'ü';
+      }
+      if "ae".contains(curr) {
+        rv.push(toned_char(curr, tone));
+        toned = true;
+      } else if !toned && curr == 'o' && next == 'u' {
+        rv.push(toned_char(curr, tone));
+        toned = true;
+      } else if !toned && "aeiouú".contains(curr) && !"aeiouü".contains(next) {
+        rv.push(toned_char(curr, tone));
+        toned = true;
+      } else {
+        rv.push(curr);
+      }
+    }
+  }
+  rv
 }
 
 fn main() {
@@ -106,7 +168,6 @@ fn main() {
   conn.execute_batch(include_str!("apkg_schema.txt")).unwrap();
   conn.execute_batch(include_str!("apkg_col.txt")).unwrap();
 
-
   for word in hsk_words {
     if !index.contains_key(&word.simp) {
       println!("{} not in dict", word.simp);
@@ -121,7 +182,7 @@ fn main() {
             &0,  // mod
             &-1,  // usn
             &"".to_string(),  // tags
-            &(dword.simp.clone() + &"\x1f".to_string() + &dword.pinyin + &"\x1f".to_string() + &dword.defs[0] + &"\x1f".to_string() + &dword.trad + &"\x1f\x1f\x1f".to_string()), // flds
+            &(dword.simp.to_string() + &"\x1f".to_string() + &prettify_pinyin(dword.pinyin) + &"\x1f".to_string() + &dword.defs[0] + &"\x1f".to_string() + &dword.trad + &"\x1f\x1f\x1f".to_string()), // flds
             &dword.trad,  // sfld
             &0,  // csum, can be ignored
             &0,  // flags
