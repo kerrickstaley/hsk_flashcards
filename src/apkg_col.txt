@@ -26,7 +26,7 @@ INSERT INTO col VALUES(
     }',
     '{
         "1425274727592": {
-            "css": ".card {\n font-family: arial;\n font-size: 1.2em;\n text-align: center;\n color: black;\n background-color: white;\n}\n\n.character {\n font-size: 3em;\n}\n.pinyin {\n font-size: 2em;\n}\n\n.card1 { background-color: #FFFFFF; }\n\n.character.front > * {\n  color: black !important;\n}",
+            "css": CARDCSS,
             "did": 1411440783087,
             "flds": [
                 {

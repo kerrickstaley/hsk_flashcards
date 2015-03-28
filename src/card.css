@@ -1,0 +1,39 @@
+.card {
+  font-family: arial;
+  font-size: 1.2em;
+  text-align: center;
+  color: black;
+  background-color: white;
+}
+
+.character {
+  font-size: 3em;
+}
+
+.pinyin {
+  font-size: 2em;
+}
+
+.card1 {
+  background-color: #ffffff;
+}
+
+.character.front > * {
+  color: black !important;
+}
+
+.tone1 {
+  color: #ff0000;
+}
+
+.tone2 {
+  color: #d89000;
+}
+
+.tone3 {
+  color: #00a000;
+}
+
+.tone4 {
+  color: #0000ff;
+}

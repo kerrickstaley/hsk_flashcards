@@ -3,10 +3,12 @@
 extern crate crypto;
 extern crate regex;
 extern crate rusqlite;
+extern crate serialize;
 
 use std::collections::HashMap;
 use std::old_io::{File, Open, Write};
 use crypto::digest::Digest;
+use serialize::json;
 
 struct HskWord {
   simp: String,
@@ -126,6 +128,11 @@ fn prettify_pinyin(s: &str) -> String {
 
     // we know that syllable is ASCII
     let tone: usize = syl[syl.len() - 1..].parse::<usize>().unwrap_or(0);
+
+    rv.push_str("<span class=\"tone");
+    rv.push(last_byte as char);
+    rv.push_str("\">");
+
     let mut toned = false;
     for i in 0..syl.len() - 1 {
       let mut curr = syl.char_at(i);
@@ -149,6 +156,8 @@ fn prettify_pinyin(s: &str) -> String {
         rv.push(curr);
       }
     }
+
+    rv.push_str("</span>");
   }
   rv
 }
@@ -166,7 +175,9 @@ fn main() {
 
   let conn = rusqlite::SqliteConnection::open(&std::path::Path::new("/tmp/collection.anki2")).unwrap();
   conn.execute_batch(include_str!("apkg_schema.txt")).unwrap();
-  conn.execute_batch(include_str!("apkg_col.txt")).unwrap();
+  let col_sql = include_str!("apkg_col.txt")
+      .replace("CARDCSS", &json::encode(&include_str!("card.css")).unwrap());
+  conn.execute_batch(&col_sql).unwrap();
 
   for word in hsk_words {
     if !index.contains_key(&word.simp) {
