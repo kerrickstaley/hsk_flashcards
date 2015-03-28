@@ -118,7 +118,7 @@ fn prettify_pinyin(s: &str) -> String {
       rv.push(' ')
     }
 
-    let last_byte = s.as_bytes()[s.len() - 1];
+    let last_byte = syl.as_bytes()[syl.len() - 1];
     if ('1' as u8) > last_byte || ('5' as u8) < last_byte {
       rv.push_str(syl);
       continue;
