@@ -37,7 +37,7 @@ fn get_hsk_words() -> Vec<HskWord> {
 }
 
 fn parse_dict<'a>(dict: &'a str) -> Vec<CcedictWord<'a>> {
-  let re = regex!(r"(.+?) (.+?) \[(.+?)\] /(.+?/)+?");
+  let re = regex!(r"(.+?) (.+?) \[(.+?)\] /(?:(.+?)/)+?");
   let mut rv = Vec::new();
   for line in dict.split("\n") {
     match re.captures(line) {
@@ -58,12 +58,52 @@ fn parse_dict<'a>(dict: &'a str) -> Vec<CcedictWord<'a>> {
   rv
 }
 
-fn get_dict_index(ccedict : &Vec<CcedictWord>) -> HashMap<String, usize> {
+fn get_dict_index<'a>(ccedict : &'a Vec<CcedictWord<'a>>) -> HashMap<String, Vec<&'a CcedictWord<'a>>> {
   let mut rv = HashMap::new();
   for i in 0..ccedict.len() {
-    rv.insert(ccedict[i].simp.to_string(), i);
+    let key = ccedict[i].simp;
+    if !rv.contains_key(key) {
+      rv.insert(key.to_string(), Vec::new());
+    }
+    rv.get_mut(key).unwrap().push(&ccedict[i]);
   }
   rv
+}
+
+fn is_good(entry: &CcedictWord) -> bool {
+  let reference_re = regex!(r"^variant of |^see [^ ]+\[[^\]]+\]$");
+  if reference_re.is_match(entry.defs[0]) {
+    return false;
+  }
+  !('A' <= entry.pinyin.char_at(0) && entry.pinyin.char_at(0) <= 'Z')
+}
+
+fn best_entry<'a>(entries: &'a Vec<&'a CcedictWord<'a>>) -> &'a CcedictWord<'a> {
+  let reference_re = regex!(r"^(variant of|see) [^ ]+\[[^\]]+\]$");
+  let mut matches = 0;
+  for entry in entries {
+    if is_good(entry) {
+      matches += 1;
+    }
+  }
+
+  /*
+  if matches > 1 {
+     println!("multiple matches for {}", entries[0].simp);
+  } else if matches == 0 {
+    println!("no good matches for {}", entries[0].simp);
+  }
+  */
+
+  if matches >= 1 {
+    for entry in entries {
+      if is_good(entry) {
+        return *entry;
+      }
+    }
+  }
+
+  entries[0]
 }
 
 fn guid_from_str(s : &str) -> String {
@@ -184,7 +224,7 @@ fn main() {
       println!("{} not in dict", word.simp);
       continue;
     }
-    let ref dword = dict[index[word.simp]];
+    let ref dword = best_entry(&index[word.simp]);
     conn.execute(
         "INSERT INTO notes VALUES(null,?,?,?,?,?,?,?,?,?,?);",
         &[
