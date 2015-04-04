@@ -23,6 +23,11 @@ struct CcedictWord<'a> {
   defs: Vec<&'a str>,
 }
 
+struct PreferredEntry<'a> {
+  pinyin: &'a str,
+  trad: &'a str,
+}
+
 fn get_hsk_words() -> Vec<HskWord> {
   let wordlist = include_str!("hsk_wordlist.csv");
   let re = regex!(r"(.+?),(.*?),(\d)\n");
@@ -71,17 +76,35 @@ fn get_dict_index<'a>(ccedict : &'a Vec<CcedictWord<'a>>) -> HashMap<String, Vec
 }
 
 fn is_good(entry: &CcedictWord) -> bool {
-  let reference_re = regex!(r"^variant of |^see [^ ]+\[[^\]]+\]$");
+  let reference_re = regex!(r"^variant of |old variant of |^see [^ ]+\[[^\]]+\]$");
   if reference_re.is_match(entry.defs[0]) {
     return false;
   }
   !('A' <= entry.pinyin.char_at(0) && entry.pinyin.char_at(0) <= 'Z')
 }
 
-fn best_entry<'a>(entries: &'a Vec<&'a CcedictWord<'a>>) -> &'a CcedictWord<'a> {
-  let reference_re = regex!(r"^(variant of|see) [^ ]+\[[^\]]+\]$");
+fn get_preferred_entry_map() -> HashMap<&'static str, PreferredEntry<'static>> {
+  let entry_list = include_str!("preferred_entries.csv");
+  let re = regex!(r"(?m)^([^#].*?),(.*?)(?:,(.*?))?$");
+  let mut rv = HashMap::new();
+  for cap in re.captures_iter(entry_list) {
+    rv.insert(cap.at(1).unwrap(), PreferredEntry{pinyin: cap.at(2).unwrap(), trad: cap.at(3).unwrap_or("")});
+  }
+  rv
+}
+
+fn best_entry<'a>(entries: &'a Vec<&'a CcedictWord<'a>>, preferred: &HashMap<&str, PreferredEntry>) -> &'a CcedictWord<'a> {
   let mut matches = 0;
   for entry in entries {
+    match preferred.get(entries[0].simp) {
+      Some(p) => {
+        if (p.pinyin == "" || p.pinyin == entry.pinyin)
+            && (p.trad == "" || p.trad == entry.trad) {
+          return entry;
+        }
+      },
+      default => ()
+    }
     if is_good(entry) {
       matches += 1;
     }
@@ -209,6 +232,7 @@ fn main() {
   let mut dict = parse_dict(include_str!("cedict_1_0_ts_utf-8_mdbg.txt"));
   dict.append(&mut parse_dict(include_str!("extra_dict.txt")));
   let index = get_dict_index(&dict);
+  let preferred = get_preferred_entry_map();
 
   // make /tmp/collection.anki2 a zero-length file
   File::open_mode(&Path::new("/tmp/collection.anki2"), Open, Write).unwrap().truncate(0).unwrap();
@@ -224,7 +248,7 @@ fn main() {
       println!("{} not in dict", word.simp);
       continue;
     }
-    let ref dword = best_entry(&index[word.simp]);
+    let ref dword = best_entry(&index[word.simp], &preferred);
     conn.execute(
         "INSERT INTO notes VALUES(null,?,?,?,?,?,?,?,?,?,?);",
         &[
