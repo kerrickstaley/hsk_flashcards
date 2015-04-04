@@ -42,20 +42,16 @@ fn get_hsk_words() -> Vec<HskWord> {
 }
 
 fn parse_dict<'a>(dict: &'a str) -> Vec<CcedictWord<'a>> {
-  let re = regex!(r"(.+?) (.+?) \[(.+?)\] /(?:(.+?)/)+?");
+  let re = regex!(r"(.+?) (.+?) \[(.+?)\] /(.+)/");
   let mut rv = Vec::new();
   for line in dict.split("\n") {
     match re.captures(line) {
       Some(cap) => {
-        let mut defs = Vec::new();
-        for i in 4..cap.len() {
-          defs.push(cap.at(i).unwrap_or(""));
-        }
         rv.push(
             CcedictWord{trad: cap.at(1).unwrap_or(""),
                         simp: cap.at(2).unwrap_or(""),
                         pinyin: cap.at(3).unwrap_or(""),
-                        defs: defs});
+                        defs: cap.at(4).unwrap_or("").split("/").collect()});
       },
       None => (),
     }
@@ -225,6 +221,15 @@ fn prettify_pinyin(s: &str) -> String {
   rv
 }
 
+fn make_defs_html(items: &Vec<&str>) -> String {
+  // doesn't perform any escaping
+  let mut rv = "<div class=\"defs_wrapper\">\n<ol>".to_string();
+  for item in items {
+    rv = rv + "\n<li>\n" + item + "\n</li>";
+  }
+  return rv + "\n</ol>\n</div>";
+}
+
 fn main() {
   let DECK_ID : i64 = 4760850724594777;
   let MODEL_ID : i64 = 1425274727592;
@@ -257,7 +262,7 @@ fn main() {
             &0,  // mod
             &-1,  // usn
             &"".to_string(),  // tags
-            &(dword.simp.to_string() + &"\x1f".to_string() + &prettify_pinyin(dword.pinyin) + &"\x1f".to_string() + &dword.defs[0] + &"\x1f".to_string() + &dword.trad + &"\x1f\x1f\x1f".to_string()), // flds
+            &(dword.simp.to_string() + &"\x1f".to_string() + &prettify_pinyin(dword.pinyin) + &"\x1f".to_string() + &make_defs_html(&dword.defs) + &"\x1f".to_string() + &dword.trad + &"\x1f\x1f\x1f".to_string()), // flds
             &dword.trad,  // sfld
             &0,  // csum, can be ignored
             &0,  // flags
