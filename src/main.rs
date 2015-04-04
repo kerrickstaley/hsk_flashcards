@@ -103,7 +103,7 @@ fn best_entry<'a>(entries: &'a Vec<&'a CcedictWord<'a>>, preferred: &HashMap<&st
           return entry;
         }
       },
-      default => ()
+      _ => ()
     }
     if is_good(entry) {
       matches += 1;
@@ -262,7 +262,7 @@ fn main() {
             &0,  // csum, can be ignored
             &0,  // flags
             &"".to_string(),  // data
-        ]);
+        ]).unwrap();
     let note_id = conn.last_insert_rowid();
     for ord in 0..4 {
       conn.execute(
@@ -285,9 +285,9 @@ fn main() {
               &0,  // odid
               &0,  // flags
               &"".to_string(),  // data
-          ]);
+          ]).unwrap();
     }
   }
   // Set due = id + 1
-  conn.execute_batch("UPDATE cards SET due = id + 1;");
+  conn.execute_batch("UPDATE cards SET due = id + 1;").unwrap();
 }
