@@ -1,14 +1,17 @@
 #![feature(plugin)]
 #![plugin(regex_macros)]
+#![feature(collections)]
 extern crate crypto;
 extern crate regex;
 extern crate rusqlite;
-extern crate serialize;
+extern crate rustc_serialize;
+extern crate yaml;
 
 use std::collections::HashMap;
-use std::old_io::{File, Open, Write};
+use std::fs::OpenOptions;
+use std::path::Path;
 use crypto::digest::Digest;
-use serialize::json;
+use rustc_serialize::json;
 
 struct HskWord {
   simp: String,
@@ -76,7 +79,8 @@ fn is_good(entry: &CcedictWord) -> bool {
   if reference_re.is_match(entry.defs[0]) {
     return false;
   }
-  !('A' <= entry.pinyin.char_at(0) && entry.pinyin.char_at(0) <= 'Z')
+  let firstchar = entry.pinyin.chars().next().unwrap();
+  !('A' <= firstchar && firstchar <= 'Z')
 }
 
 fn get_preferred_entry_map() -> HashMap<&'static str, PreferredEntry<'static>> {
@@ -135,7 +139,7 @@ fn guid_from_str(s : &str) -> String {
   let mut val : u64 = 0;
   for i in 0..8 {
     val <<= 8;
-    val += std::num::cast(sha_out[i]).unwrap();
+    val += sha_out[i] as u64;
   }
 
   // convert to base91
@@ -145,7 +149,7 @@ fn guid_from_str(s : &str) -> String {
     rv_reversed.push(BASE91_TABLE[(val % 91) as usize]);
     val /= 91;
   }
-  rv_reversed.as_slice().chars().rev().collect()
+  rv_reversed.chars().rev().collect()
 }
 
 fn toned_char(c: char, tone: usize) -> char {
@@ -193,9 +197,12 @@ fn prettify_pinyin(s: &str) -> String {
     rv.push_str("\">");
 
     let mut toned = false;
-    for i in 0..syl.len() - 1 {
-      let mut curr = syl.char_at(i);
-      let next = syl.char_at(i + 1);
+
+    let mut syl_iter = syl.chars();
+    // curr iterates over syl[0] to syl[syl.len() - 1], and next is the char
+    // after curr
+    let mut curr = syl_iter.next().unwrap();
+    for next in syl_iter {
       if curr == 'u' && next == ':' {
         continue;
       }
@@ -214,6 +221,7 @@ fn prettify_pinyin(s: &str) -> String {
       } else {
         rv.push(curr);
       }
+      curr = next;
     }
 
     rv.push_str("</span>");
@@ -240,7 +248,12 @@ fn main() {
   let preferred = get_preferred_entry_map();
 
   // make /tmp/collection.anki2 a zero-length file
-  File::open_mode(&Path::new("/tmp/collection.anki2"), Open, Write).unwrap().truncate(0).unwrap();
+  OpenOptions::new()
+      .create(true)
+      .write(true)
+      .truncate(true)
+      .open("/tmp/collection.anki2")
+      .unwrap();
 
   let conn = rusqlite::SqliteConnection::open(&std::path::Path::new("/tmp/collection.anki2")).unwrap();
   conn.execute_batch(include_str!("apkg_schema.txt")).unwrap();
@@ -253,7 +266,7 @@ fn main() {
       println!("{} not in dict", word.simp);
       continue;
     }
-    let ref dword = best_entry(&index[word.simp], &preferred);
+    let ref dword = best_entry(&index[&word.simp], &preferred);
     conn.execute(
         "INSERT INTO notes VALUES(null,?,?,?,?,?,?,?,?,?,?);",
         &[

@@ -8,6 +8,7 @@ authors = ["Kerrick Staley <kerrick@kerrickstaley.com>"]
 
 regex = "0.1.16"
 regex_macros = "0.1.10"
-rusqlite = "0.0.10"
+rusqlite = "0.0.17"
 rust-crypto = "0.2.18"
-rustc-serialize = "0.3.0"
+rustc-serialize = "0.3.12"
+yaml = "0.1.4"
