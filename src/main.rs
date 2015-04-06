@@ -12,6 +12,7 @@ use std::fs::OpenOptions;
 use std::path::Path;
 use crypto::digest::Digest;
 use rustc_serialize::json;
+use yaml::constructor::*;
 
 struct HskWord {
   simp: String,
@@ -26,9 +27,9 @@ struct CcedictWord<'a> {
   defs: Vec<&'a str>,
 }
 
-struct PreferredEntry<'a> {
-  pinyin: &'a str,
-  trad: &'a str,
+struct PreferredEntry {
+  pinyin: String,
+  trad: String,
 }
 
 fn get_hsk_words() -> Vec<HskWord> {
@@ -83,17 +84,61 @@ fn is_good(entry: &CcedictWord) -> bool {
   !('A' <= firstchar && firstchar <= 'Z')
 }
 
-fn get_preferred_entry_map() -> HashMap<&'static str, PreferredEntry<'static>> {
-  let entry_list = include_str!("preferred_entries.csv");
-  let re = regex!(r"(?m)^([^#].*?),(.*?)(?:,(.*?))?$");
-  let mut rv = HashMap::new();
-  for cap in re.captures_iter(entry_list) {
-    rv.insert(cap.at(1).unwrap(), PreferredEntry{pinyin: cap.at(2).unwrap(), trad: cap.at(3).unwrap_or("")});
+fn yaml_to_preferred_entry(y: YamlStandardData) -> PreferredEntry {
+  let mapping = match y {
+    YamlStandardData::YamlMapping(m) => m,
+    _ => panic!("data wasn't a mapping"),
+  };
+  let mut rv = PreferredEntry{pinyin: "".to_string(), trad: "".to_string()};
+  for (key, val) in mapping {
+    let key_str = match key {
+      YamlStandardData::YamlString(s) => s,
+      _ => panic!("data wasn't a string"),
+    };
+    let val_str = match val {
+      YamlStandardData::YamlString(s) => s,
+      _ => panic!("data wasn't a string"),
+    };
+    if key_str == "pinyin" {
+      rv.pinyin = val_str;
+    } else if key_str == "trad" {
+      rv.trad = val_str;
+    }
   }
   rv
 }
 
-fn best_entry<'a>(entries: &'a Vec<&'a CcedictWord<'a>>, preferred: &HashMap<&str, PreferredEntry>) -> &'a CcedictWord<'a> {
+fn get_preferred_entry_map() -> HashMap<String, PreferredEntry> {
+  // TODO: the way this function works is sorta janky, try to make it cleaner
+  let mut rv = HashMap::new();
+  let in_str = include_str!("preferred_entries.yaml");
+  let yaml_docs = yaml::parse_bytes_utf8(in_str.as_bytes()).unwrap();
+  // There's only one doc, but we want to get an owned copy of it, so we can't
+  // do yaml_docs[0]. Instead, we do a for-loop over yaml_docs. This moves it
+  // into the for-loop, so it gets destroyed as we go along
+  let mut yaml_doc = YamlStandardData::YamlNull;
+  for item in yaml_docs {
+    yaml_doc = item;
+  }
+
+  let yaml_vec = match yaml_doc {
+    YamlStandardData::YamlMapping(v) => v,
+    _ => panic!("data wasn't a mapping"),
+  };
+
+  for (key, val) in yaml_vec {
+    let key_str = match key {
+      YamlStandardData::YamlString(s) => s,
+      _ => panic!("data wasn't a string"),
+    };
+    rv.insert(key_str, yaml_to_preferred_entry(val));
+  }
+
+  rv
+}
+
+
+fn best_entry<'a>(entries: &'a Vec<&'a CcedictWord<'a>>, preferred: &HashMap<String, PreferredEntry>) -> &'a CcedictWord<'a> {
   let mut matches = 0;
   for entry in entries {
     match preferred.get(entries[0].simp) {
