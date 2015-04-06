@@ -20,11 +20,18 @@ struct HskWord {
   level: u32,
 }
 
+struct Classifier<'a> {
+  trad: &'a str,
+  simp: &'a str,
+  pinyin: &'a str,
+}
+
 struct CcedictWord<'a> {
   trad: &'a str,
   simp: &'a str,
   pinyin: &'a str,
   defs: Vec<&'a str>,
+  clfrs: Vec<Classifier<'a>>,
 }
 
 struct PreferredEntry {
@@ -45,17 +52,52 @@ fn get_hsk_words() -> Vec<HskWord> {
   rv
 }
 
+fn starts_with(s: &str, prefix: &str) -> bool {
+  let mut sc = s.chars();
+  let mut prefixc = prefix.chars();
+  loop {
+    match (sc.next(), prefixc.next()) {
+      (Some(c1), Some(c2)) => if c1 != c2 { return false; },
+      (Some(c), None) => { return true; },
+      (None, Some(c)) => { return false; },
+      (None, None) => { return true; },
+    }
+  }
+}
+
 fn parse_dict<'a>(dict: &'a str) -> Vec<CcedictWord<'a>> {
-  let re = regex!(r"(.+?) (.+?) \[(.+?)\] /(.+)/");
   let mut rv = Vec::new();
   for line in dict.split("\n") {
-    match re.captures(line) {
+    let entry_re = regex!(r"(.+?) (.+?) \[(.+?)\] /(.+)/");
+    match entry_re.captures(line) {
       Some(cap) => {
+        let mut defs: Vec<&str> = cap.at(4).unwrap_or("").split("/").collect();
+        let mut clfrs = Vec::new();
+        if defs.len() > 0 && starts_with(defs[defs.len() - 1], "CL:") {
+          let mut pieces = defs.pop().unwrap().split(":");
+          pieces.next();
+          for clfr_str in pieces.next().unwrap().split(",") {
+            let clfr_re = regex!(r"([^\[\|]+)(?:\|([^\[]+))?\[(.+)\]");
+            match clfr_re.captures(clfr_str) {
+              Some(cap) => {
+                clfrs.push(
+                    Classifier{
+                        trad: cap.at(1).unwrap_or(""),
+                        simp: cap.at(2).unwrap_or(cap.at(1).unwrap_or("")),
+                        pinyin: cap.at(3).unwrap_or(""),
+                    }
+                );
+              },
+              _ => { println!("Couldn't parse {} as a classifier", clfr_str) },
+            }
+          }
+        }
         rv.push(
             CcedictWord{trad: cap.at(1).unwrap_or(""),
                         simp: cap.at(2).unwrap_or(""),
                         pinyin: cap.at(3).unwrap_or(""),
-                        defs: cap.at(4).unwrap_or("").split("/").collect()});
+                        defs: defs,
+                        clfrs: clfrs});
       },
       None => (),
     }
