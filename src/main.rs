@@ -420,7 +420,7 @@ fn main() {
               + &prettify_pinyin(dword.pinyin) + "\x1f"
               + &make_defs_html(&dword.defs) + "\x1f"
               + &dword.clfrs.iter().map(make_clfr_str).collect::<Vec<_>>().connect(", ") + "\x1f"
-              + "\x1f\x1f\x1f"), // flds
+              + "\x1f\x1f"), // flds
             &dword.trad,  // sfld
             &0,  // csum, can be ignored
             &0,  // flags
