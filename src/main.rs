@@ -414,7 +414,7 @@ fn main() {
             &MODEL_ID,  // mid
             &0,  // mod
             &-1,  // usn
-            &"".to_string(),  // tags
+            &format!(" HSK_Level_{} ", word.level),  // tags
             &(dword.simp.to_string() + "\x1f"
               + &trad + "\x1f"
               + &prettify_pinyin(dword.pinyin) + "\x1f"
