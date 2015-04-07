@@ -8,6 +8,7 @@ extern crate rustc_serialize;
 extern crate yaml;
 
 use std::collections::HashMap;
+use std::collections::BTreeMap;
 use std::fs::OpenOptions;
 use std::path::Path;
 use crypto::digest::Digest;
@@ -325,6 +326,46 @@ fn make_defs_html(items: &Vec<&str>) -> String {
   return rv + "\n</ol>\n</div>";
 }
 
+fn yaml_string(y: YamlStandardData) -> String {
+  match y {
+    YamlStandardData::YamlString(s) => s,
+    _ => panic!("data wasn't a string"),
+  }
+}
+
+fn make_col_sql() -> String {
+  let mut tmpls = Vec::new();
+  let yaml_doc = yaml::parse_bytes_utf8(
+          include_str!("templates.yaml").as_bytes())
+      .unwrap()
+      .pop();
+  let seq = match yaml_doc {
+    Some(YamlStandardData::YamlSequence(s)) => s,
+    _ => panic!("data wasn't a sequence"),
+  };
+  let mut ord = 0;
+  for item in seq {
+    let map = match item {
+      YamlStandardData::YamlMapping(m) => m,
+      _ => panic!("data wasn't a mapping"),
+    };
+    let mut outmap = BTreeMap::new();
+    for (key, val) in map {
+      outmap.insert(yaml_string(key), json::Json::String(yaml_string(val)));
+    }
+    outmap.insert("bafmt".to_string(), json::Json::String("".to_string()));
+    outmap.insert("bqfmt".to_string(), json::Json::String("".to_string()));
+    outmap.insert("did".to_string(), json::Json::Null);
+    outmap.insert("ord".to_string(), json::Json::I64(ord));
+    ord += 1;
+    tmpls.push(outmap);
+  }
+
+  include_str!("apkg_col.txt")
+      .replace("TMPLS", &json::encode(&tmpls).unwrap())
+      .replace("CARDCSS", &json::encode(&include_str!("card.css")).unwrap())
+}
+
 fn main() {
   let DECK_ID : i64 = 4760850724594777;
   let MODEL_ID : i64 = 1425274727592;
@@ -344,9 +385,7 @@ fn main() {
 
   let conn = rusqlite::SqliteConnection::open(&std::path::Path::new("/tmp/collection.anki2")).unwrap();
   conn.execute_batch(include_str!("apkg_schema.txt")).unwrap();
-  let col_sql = include_str!("apkg_col.txt")
-      .replace("CARDCSS", &json::encode(&include_str!("card.css")).unwrap());
-  conn.execute_batch(&col_sql).unwrap();
+  conn.execute_batch(&make_col_sql()).unwrap();
 
   for word in hsk_words {
     if !index.contains_key(&word.simp) {

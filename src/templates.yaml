@@ -1,0 +1,67 @@
+- name: English
+  qfmt: |
+    {{English}}
+  afmt: |
+    {{FrontSide}}
+
+    <hr id=answer>
+    <div class="character">
+      {{Simplified}}
+    </div>
+
+    <br>
+
+    <div class="pinyin">
+      {{Pinyin}}
+    </div>
+- name: Simplified
+  qfmt: |
+    <div class="character front">
+      {{Simplified}}
+    </div>
+  afmt: |
+    {{FrontSide}}
+
+    <hr id=answer>
+
+    <div class="pinyin">
+      {{Pinyin}}
+    </div>
+
+    <br><br>
+
+    {{English}}
+- name: Traditional
+  qfmt: |
+    <div class="character front">
+      {{Traditional}}
+    </div>
+  afmt: |
+    {{FrontSide}}
+
+    <hr id=answer>
+
+    <div class="pinyin">
+      {{Pinyin}}
+    </div>
+
+    <br><br>
+
+    {{English}}
+- name: Pinyin
+  qfmt: |
+    <div class="pinyin">
+      {{Pinyin}}
+    </div>
+  afmt: |
+    {{FrontSide}}
+
+    <hr id=answer>
+
+    <div class="character">
+      {{Simplified}}
+    </div>
+
+    <br>
+
+    {{English}}

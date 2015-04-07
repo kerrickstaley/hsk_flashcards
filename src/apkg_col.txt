@@ -130,44 +130,7 @@ INSERT INTO col VALUES(
             ],
             "sortf": 3,
             "tags": [],
-            "tmpls": [
-                {
-                    "afmt": "{{FrontSide}}\n\n<hr id=answer>\n<div class=\"character\">\n{{Simplified}}</div><br>\n\n<div class=\"pinyin\">\n{{Pinyin}}\n</div>",
-                    "bafmt": "",
-                    "bqfmt": "",
-                    "did": null,
-                    "name": "English",
-                    "ord": 0,
-                    "qfmt": "{{English}}"
-                },
-                {
-                    "afmt": "<div class=\"character \">\n{{Simplified}}\n</div>\n\n<hr id=answer>\n\n<div class=\"pinyin\">{{Pinyin}}</div><br><br>\n{{English}}",
-                    "bafmt": "",
-                    "bqfmt": "",
-                    "did": null,
-                    "name": "Simplified",
-                    "ord": 1,
-                    "qfmt": "<div class=\"character front\">\n{{Simplified}}\n</div>"
-                },
-                {
-                    "afmt": "{{FrontSide}}\n\n<hr id=answer>\n\n<div class=\"character\">\n{{Simplified}}\n</div><br>\n\n{{English}}",
-                    "bafmt": "",
-                    "bqfmt": "",
-                    "did": null,
-                    "name": "Pinyin",
-                    "ord": 2,
-                    "qfmt": "<div class=\"pinyin\">{{Pinyin}}</div>"
-                },
-                {
-                    "afmt": "{{FrontSide}}\n\n<hr id=answer>\n\n<div class=\"pinyin\">{{Pinyin}}</div><br><br>\n{{English}}",
-                    "bafmt": "",
-                    "bqfmt": "",
-                    "did": null,
-                    "name": "Traditional",
-                    "ord": 3,
-                    "qfmt": "<div class=\"characte frontr\">\n{{Traditional}}\n</div>"
-                }
-            ],
+            "tmpls": TMPLS,
             "type": 0,
             "usn": -1,
             "vers": []
