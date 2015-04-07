@@ -410,7 +410,11 @@ fn main() {
     conn.execute(
         "INSERT INTO notes VALUES(null,?,?,?,?,?,?,?,?,?,?);",
         &[
-            &guid_from_str(&("kerrick hsk ".to_string() + &dword.trad)),  // guid
+            &guid_from_str(
+                &("kerrick hsk".to_string()
+                  + " " + &dword.simp
+                  + " " + &dword.trad
+                  + " " + &dword.pinyin)),  // guid
             &MODEL_ID,  // mid
             &0,  // mod
             &-1,  // usn
