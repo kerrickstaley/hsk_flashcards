@@ -41,16 +41,16 @@ INSERT INTO col VALUES(
                 {
                     "font": "Liberation Sans",
                     "media": [],
-                    "name": "Pinyin",
+                    "name": "Traditional",
                     "ord": 1,
                     "rtl": false,
-                    "size": 12,
+                    "size": 20,
                     "sticky": false
                 },
                 {
                     "font": "Liberation Sans",
                     "media": [],
-                    "name": "English",
+                    "name": "Pinyin",
                     "ord": 2,
                     "rtl": false,
                     "size": 12,
@@ -59,16 +59,16 @@ INSERT INTO col VALUES(
                 {
                     "font": "Liberation Sans",
                     "media": [],
-                    "name": "Traditional",
+                    "name": "English",
                     "ord": 3,
                     "rtl": false,
-                    "size": 20,
+                    "size": 12,
                     "sticky": false
                 },
                 {
                     "font": "Liberation Sans",
                     "media": [],
-                    "name": "Character Hint",
+                    "name": "Classifier",
                     "ord": 4,
                     "rtl": false,
                     "size": 20,
@@ -77,7 +77,7 @@ INSERT INTO col VALUES(
                 {
                     "font": "Liberation Sans",
                     "media": [],
-                    "name": "English Hint",
+                    "name": "Character Hint",
                     "ord": 5,
                     "rtl": false,
                     "size": 20,
@@ -86,8 +86,17 @@ INSERT INTO col VALUES(
                 {
                     "font": "Liberation Sans",
                     "media": [],
-                    "name": "Pinyin Hint",
+                    "name": "English Hint",
                     "ord": 6,
+                    "rtl": false,
+                    "size": 20,
+                    "sticky": false
+                },
+                {
+                    "font": "Liberation Sans",
+                    "media": [],
+                    "name": "Pinyin Hint",
+                    "ord": 7,
                     "rtl": false,
                     "size": 20,
                     "sticky": false

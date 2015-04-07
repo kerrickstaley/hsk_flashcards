@@ -366,6 +366,15 @@ fn make_col_sql() -> String {
       .replace("CARDCSS", &json::encode(&include_str!("card.css")).unwrap())
 }
 
+fn make_clfr_str(clfr: &Classifier) -> String {
+ let char = if clfr.simp == clfr.trad {
+   clfr.simp.to_string()
+ } else {
+   clfr.simp.to_string() + "|" + clfr.trad
+ };
+ char + "(" + &prettify_pinyin(clfr.pinyin) + ")"
+}
+
 fn main() {
   let DECK_ID : i64 = 4760850724594777;
   let MODEL_ID : i64 = 1425274727592;
@@ -393,6 +402,11 @@ fn main() {
       continue;
     }
     let ref dword = best_entry(&index[&word.simp], &preferred);
+    let trad = if dword.simp == dword.trad {
+      ""
+    } else {
+      dword.trad
+    };
     conn.execute(
         "INSERT INTO notes VALUES(null,?,?,?,?,?,?,?,?,?,?);",
         &[
@@ -401,7 +415,12 @@ fn main() {
             &0,  // mod
             &-1,  // usn
             &"".to_string(),  // tags
-            &(dword.simp.to_string() + &"\x1f".to_string() + &prettify_pinyin(dword.pinyin) + &"\x1f".to_string() + &make_defs_html(&dword.defs) + &"\x1f".to_string() + &dword.trad + &"\x1f\x1f\x1f".to_string()), // flds
+            &(dword.simp.to_string() + "\x1f"
+              + &trad + "\x1f"
+              + &prettify_pinyin(dword.pinyin) + "\x1f"
+              + &make_defs_html(&dword.defs) + "\x1f"
+              + &dword.clfrs.iter().map(make_clfr_str).collect::<Vec<_>>().connect(", ") + "\x1f"
+              + "\x1f\x1f\x1f"), // flds
             &dword.trad,  // sfld
             &0,  // csum, can be ignored
             &0,  // flags
@@ -409,6 +428,9 @@ fn main() {
         ]).unwrap();
     let note_id = conn.last_insert_rowid();
     for ord in 0..4 {
+      if ord == 2 && trad == "" {
+        continue;
+      }
       conn.execute(
           "INSERT INTO cards VALUES(null,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);",
           &[
