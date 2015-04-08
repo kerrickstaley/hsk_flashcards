@@ -16,7 +16,7 @@
     {{#Classifier}}CL: {{Classifier}}{{/Classifier}}
 - name: Simplified
   qfmt: |
-    <div class="character front">
+    <div class="character">
       {{Simplified}}
     </div>
   afmt: |
@@ -39,7 +39,7 @@
     {{English}}
 - name: Traditional
   qfmt: |
-    <div class="character front">
+    <div class="character">
       {{Traditional}}
     </div>
   afmt: |

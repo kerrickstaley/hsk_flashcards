@@ -31,10 +31,6 @@
   background-color: #ffffff;
 }
 
-.character.front > * {
-  color: black !important;
-}
-
 .tone1 {
   color: #ff0000;
 }
