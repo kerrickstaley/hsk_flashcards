@@ -74,23 +74,26 @@ fn parse_dict<'a>(dict: &'a str) -> Vec<CcedictWord<'a>> {
       Some(cap) => {
         let mut defs: Vec<&str> = cap.at(4).unwrap_or("").split("/").collect();
         let mut clfrs = Vec::new();
-        if defs.len() > 0 && starts_with(defs[defs.len() - 1], "CL:") {
-          let mut pieces = defs.pop().unwrap().split(":");
-          pieces.next();
-          for clfr_str in pieces.next().unwrap().split(",") {
-            let clfr_re = regex!(r"([^\[\|]+)(?:\|([^\[]+))?\[(.+)\]");
-            match clfr_re.captures(clfr_str) {
-              Some(cap) => {
-                clfrs.push(
-                    Classifier{
-                        trad: cap.at(1).unwrap_or(""),
-                        simp: cap.at(2).unwrap_or(cap.at(1).unwrap_or("")),
-                        pinyin: cap.at(3).unwrap_or(""),
-                    }
-                );
-              },
-              _ => { println!("Couldn't parse {} as a classifier", clfr_str) },
+        for i in 0..defs.len() {
+          if starts_with(defs[i], "CL:") {
+            let mut pieces = defs.remove(i).split(":");
+            pieces.next();
+            for clfr_str in pieces.next().unwrap().split(",") {
+              let clfr_re = regex!(r"([^\[\|]+)(?:\|([^\[]+))?\[(.+)\]");
+              match clfr_re.captures(clfr_str) {
+                Some(cap) => {
+                  clfrs.push(
+                      Classifier{
+                          trad: cap.at(1).unwrap_or(""),
+                          simp: cap.at(2).unwrap_or(cap.at(1).unwrap_or("")),
+                          pinyin: cap.at(3).unwrap_or(""),
+                      }
+                  );
+                },
+                _ => { println!("Couldn't parse {} as a classifier", clfr_str) },
+              }
             }
+            break;
           }
         }
         rv.push(
