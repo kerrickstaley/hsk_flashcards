@@ -27,7 +27,7 @@ struct Classifier<'a> {
   pinyin: &'a str,
 }
 
-struct CcedictWord<'a> {
+struct CedictWord<'a> {
   trad: &'a str,
   simp: &'a str,
   pinyin: &'a str,
@@ -66,7 +66,7 @@ fn starts_with(s: &str, prefix: &str) -> bool {
   }
 }
 
-fn parse_dict<'a>(dict: &'a str) -> Vec<CcedictWord<'a>> {
+fn parse_dict<'a>(dict: &'a str) -> Vec<CedictWord<'a>> {
   let mut rv = Vec::new();
   for line in dict.split("\n") {
     let entry_re = regex!(r"(.+?) (.+?) \[(.+?)\] /(.+)/");
@@ -97,7 +97,7 @@ fn parse_dict<'a>(dict: &'a str) -> Vec<CcedictWord<'a>> {
           }
         }
         rv.push(
-            CcedictWord{trad: cap.at(1).unwrap_or(""),
+            CedictWord{trad: cap.at(1).unwrap_or(""),
                         simp: cap.at(2).unwrap_or(""),
                         pinyin: cap.at(3).unwrap_or(""),
                         defs: defs,
@@ -109,7 +109,7 @@ fn parse_dict<'a>(dict: &'a str) -> Vec<CcedictWord<'a>> {
   rv
 }
 
-fn get_dict_index<'a>(ccedict : &'a Vec<CcedictWord<'a>>) -> HashMap<String, Vec<&'a CcedictWord<'a>>> {
+fn get_dict_index<'a>(ccedict : &'a Vec<CedictWord<'a>>) -> HashMap<String, Vec<&'a CedictWord<'a>>> {
   let mut rv = HashMap::new();
   for i in 0..ccedict.len() {
     let key = ccedict[i].simp;
@@ -121,7 +121,7 @@ fn get_dict_index<'a>(ccedict : &'a Vec<CcedictWord<'a>>) -> HashMap<String, Vec
   rv
 }
 
-fn is_good(entry: &CcedictWord) -> bool {
+fn is_good(entry: &CedictWord) -> bool {
   let reference_re = regex!(r"^variant of |old variant of |^see [^ ]+\[[^\]]+\]$");
   if reference_re.is_match(entry.defs[0]) {
     return false;
@@ -185,9 +185,9 @@ fn get_preferred_entry_map() -> HashMap<String, PreferredEntry> {
 
 
 fn best_entry<'a>(word: &HskWord,
-                  entries: &'a Vec<&'a CcedictWord<'a>>,
+                  entries: &'a Vec<&'a CedictWord<'a>>,
                   preferred: &HashMap<String, PreferredEntry>)
-                  -> &'a CcedictWord<'a> {
+                  -> &'a CedictWord<'a> {
   let mut matches = 0;
   let key = if word.part_of_speech == "" {
     word.simp.to_string()
