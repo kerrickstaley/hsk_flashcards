@@ -4,7 +4,7 @@
 # General comment: when looking at duplicates, think about:
 #   1. Do the different entries have very different definitions? If so, is one
 #      definition significantly more obscure, or only used as part of a larger
-#      word? 
+#      word?
 #   2. Do the different entries have different pronunciations? If so, do they
 #      vary on tone only, or are the consonants/vowels different too?
 #   3. Is it a case where multiple traditional characters were mapped to a
@@ -16,7 +16,8 @@
 # versions, we should include all of them in the same note. Cases where there
 # are multiple similar pronunciations for a character may also be included in
 # a single note.
-# TODO: there are a few words that are repeated, fix these
+# Note: 对, 等, 花, 过 appear twice in HSK but have only one MDBG entry, ¯\_(ツ)_/¯
+
 的:
   pinyin: de5
 东西:
@@ -68,7 +69,8 @@
   pinyin: shuo1
 听:
   pinyin: ting1
-喂:
+# TODO: not sure which pronunciation we want
+喂 叹词:
   pinyin: wei2
 吧:
   pinyin: ba5
@@ -76,15 +78,15 @@
   pinyin: bi3
 别:
   pinyin: bie2
-长:
+长 形容词:
   pinyin: chang2
 从:
   pinyin: cong2
-得:
+得 助词:
   pinyin: de5
 给:
   pinyin: gei3
-还:
+还 副词:
   pinyin: hai2
 好吃:
   pinyin: hao3 chi1
@@ -136,8 +138,8 @@
   pinyin: geng4
 故事:
   pinyin: gu4 shi5
-还:
-  pinyin: hai2
+还 动词:
+  pinyin: huan2
 教:
   pinyin: jiao1
 角:
@@ -170,12 +172,12 @@
 向:
   pinyin: xiang4
   trad: 向
-长:
-  pinyin: chang2
-只:
-  pinyin: zhi3
-  trad: 只
-只:
+长 形容词:
+  pinyin: zhang3
+只 量词:
+  pinyin: zhi1
+# TODO: there are two traditional characters, which is more common?
+只 副词:
   pinyin: zhi3
   trad: 只
 种:
@@ -190,8 +192,8 @@
   trad: 當
 倒:
   pinyin: dao4
-得:
-  pinyin: de5
+得 助动词:
+  pinyin: dei3
 底:
   pinyin: di3
 干:
@@ -472,8 +474,9 @@
   trad: 颱風
 哇:
   pinyin: wa5
-喂:
-  pinyin: wei2
+喂 动词:
+  pinyin: wei4
+  trad: 餵
 温和:
   pinyin: wen1 he2
 削:

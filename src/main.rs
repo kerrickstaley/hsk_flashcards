@@ -181,10 +181,18 @@ fn get_preferred_entry_map() -> HashMap<String, PreferredEntry> {
 }
 
 
-fn best_entry<'a>(entries: &'a Vec<&'a CcedictWord<'a>>, preferred: &HashMap<String, PreferredEntry>) -> &'a CcedictWord<'a> {
+fn best_entry<'a>(word: &HskWord,
+                  entries: &'a Vec<&'a CcedictWord<'a>>,
+                  preferred: &HashMap<String, PreferredEntry>)
+                  -> &'a CcedictWord<'a> {
   let mut matches = 0;
+  let key = if word.part_of_speech == "" {
+    word.simp.to_string()
+  } else {
+    word.simp.to_string() + " " + &word.part_of_speech
+  };
   for entry in entries {
-    match preferred.get(entries[0].simp) {
+    match preferred.get(&key) {
       Some(p) => {
         if (p.pinyin == "" || p.pinyin == entry.pinyin)
             && (p.trad == "" || p.trad == entry.trad) {
@@ -401,7 +409,7 @@ fn main() {
       println!("{} not in dict", word.simp);
       continue;
     }
-    let ref dword = best_entry(&index[&word.simp], &preferred);
+    let ref dword = best_entry(&word, &index[&word.simp], &preferred);
     let trad = if dword.simp == dword.trad {
       ""
     } else {
