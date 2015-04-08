@@ -29,8 +29,9 @@
     </div>
 
     {{#Traditional}}
-    <div>
-      Tr: <span class="character">{{Traditional}}</span>
+    <div class="character_wrapper">
+      <span class="character">{{Traditional}}</span>
+      <span class="character_type">&nbsp;&nbsp;Trad</span>
     </div>
     {{/Traditional}}
 
@@ -51,8 +52,9 @@
       {{Pinyin}}
     </div>
 
-    <div>
-      Sm: <span class="character">{{Simplified}}</span>
+    <div class="character_wrapper">
+      <span class="character">{{Simplified}}</span>
+      <span class="character_type">&nbsp;&nbsp;Simp</span>
     </div>
 
     {{#Classifier}}CL: {{Classifier}}{{/Classifier}}

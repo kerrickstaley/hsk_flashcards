@@ -6,8 +6,18 @@
   background-color: white;
 }
 
+.character_wrapper {
+  position: relative;
+}
+
 .character {
   font-size: 3em;
+}
+
+.character_type {
+  color: #AAA;
+  position: absolute;
+  bottom: 0.5em;
 }
 
 .pinyin {
