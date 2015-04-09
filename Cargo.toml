@@ -6,7 +6,7 @@ authors = ["Kerrick Staley <kerrick@kerrickstaley.com>"]
 
 [dependencies]
 
-regex = "0.1.16"
+regex = "0.1.27"
 regex_macros = "0.1.10"
 rusqlite = "0.0.17"
 rust-crypto = "0.2.18"

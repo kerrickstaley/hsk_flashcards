@@ -2,8 +2,8 @@
 name = "hsk_flashcards"
 version = "0.0.1"
 dependencies = [
- "regex 0.1.26 (registry+https://github.com/rust-lang/crates.io-index)",
- "regex_macros 0.1.14 (registry+https://github.com/rust-lang/crates.io-index)",
+ "regex 0.1.27 (registry+https://github.com/rust-lang/crates.io-index)",
+ "regex_macros 0.1.15 (registry+https://github.com/rust-lang/crates.io-index)",
  "rusqlite 0.0.17 (registry+https://github.com/rust-lang/crates.io-index)",
  "rust-crypto 0.2.31 (registry+https://github.com/rust-lang/crates.io-index)",
  "rustc-serialize 0.3.12 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -22,7 +22,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "libc"
-version = "0.1.5"
+version = "0.1.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
@@ -30,7 +30,7 @@ name = "libsqlite3-sys"
 version = "0.0.13"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
- "libc 0.1.5 (registry+https://github.com/rust-lang/crates.io-index)",
+ "libc 0.1.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "pkg-config 0.3.3 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
@@ -39,7 +39,7 @@ name = "log"
 version = "0.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
- "libc 0.1.5 (registry+https://github.com/rust-lang/crates.io-index)",
+ "libc 0.1.6 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -52,21 +52,21 @@ name = "rand"
 version = "0.3.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
- "libc 0.1.5 (registry+https://github.com/rust-lang/crates.io-index)",
+ "libc 0.1.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "log 0.3.1 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
 name = "regex"
-version = "0.1.26"
+version = "0.1.27"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "regex_macros"
-version = "0.1.14"
+version = "0.1.15"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
- "regex 0.1.26 (registry+https://github.com/rust-lang/crates.io-index)",
+ "regex 0.1.27 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -75,7 +75,7 @@ version = "0.0.17"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "bitflags 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
- "libc 0.1.5 (registry+https://github.com/rust-lang/crates.io-index)",
+ "libc 0.1.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "libsqlite3-sys 0.0.13 (registry+https://github.com/rust-lang/crates.io-index)",
  "time 0.1.24 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
@@ -86,7 +86,7 @@ version = "0.2.31"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "gcc 0.3.4 (registry+https://github.com/rust-lang/crates.io-index)",
- "libc 0.1.5 (registry+https://github.com/rust-lang/crates.io-index)",
+ "libc 0.1.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "rand 0.3.7 (registry+https://github.com/rust-lang/crates.io-index)",
  "rustc-serialize 0.3.12 (registry+https://github.com/rust-lang/crates.io-index)",
  "time 0.1.24 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -103,7 +103,7 @@ version = "0.1.24"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "gcc 0.3.4 (registry+https://github.com/rust-lang/crates.io-index)",
- "libc 0.1.5 (registry+https://github.com/rust-lang/crates.io-index)",
+ "libc 0.1.6 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -111,7 +111,7 @@ name = "yaml"
 version = "0.1.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
- "regex 0.1.26 (registry+https://github.com/rust-lang/crates.io-index)",
- "regex_macros 0.1.14 (registry+https://github.com/rust-lang/crates.io-index)",
+ "regex 0.1.27 (registry+https://github.com/rust-lang/crates.io-index)",
+ "regex_macros 0.1.15 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
