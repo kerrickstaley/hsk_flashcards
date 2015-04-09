@@ -436,7 +436,7 @@ fn main() {
               + &make_defs_html(&dword.defs) + "\x1f"
               + &dword.clfrs.iter().map(make_clfr_str).collect::<Vec<_>>().connect(", ") + "\x1f"
               + "\x1f\x1f"), // flds
-            &dword.trad,  // sfld
+            &dword.simp,  // sfld
             &0,  // csum, can be ignored
             &0,  // flags
             &"".to_string(),  // data

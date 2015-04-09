@@ -137,7 +137,7 @@ INSERT INTO col VALUES(
                     ]
                 ]
             ],
-            "sortf": 3,
+            "sortf": 0,
             "tags": [],
             "tmpls": TMPLS,
             "type": 0,
