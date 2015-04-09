@@ -388,7 +388,7 @@ fn make_clfr_str(clfr: &Classifier) -> String {
 
 fn main() {
   let DECK_ID : i64 = 4760850724594777;
-  let MODEL_ID : i64 = 1425274727592;
+  let MODEL_ID : i64 = 1425274727596;
   let hsk_words = get_hsk_words();
   let mut dict = parse_dict(include_str!("cedict_1_0_ts_utf-8_mdbg.txt"));
   dict.append(&mut parse_dict(include_str!("extra_dict.txt")));
