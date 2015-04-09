@@ -388,7 +388,7 @@ fn make_clfr_str(clfr: &Classifier) -> String {
 }
 
 fn main() {
-  let DECK_ID : i64 = 4760850724594777;
+  let DECK_ID : i64 = 1428564061183;
   let MODEL_ID : i64 = 1425274727596;
   let timespec = time::get_time();
   let hsk_words = get_hsk_words();

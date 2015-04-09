@@ -174,14 +174,14 @@ INSERT INTO col VALUES(
             ],
             "usn": 0
         },
-        "4760850724594777": {
+        "1428564061183": {
             "collapsed": false,
             "conf": 1,
             "desc": "",
             "dyn": 0,
             "extendNew": 0,
             "extendRev": 50,
-            "id": 4760850724594777,
+            "id": 1428564061183,
             "lrnToday": [
                 163,
                 2
