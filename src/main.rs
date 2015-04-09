@@ -2,6 +2,7 @@
 #![plugin(regex_macros)]
 #![feature(collections)]
 extern crate crypto;
+extern crate time;
 extern crate regex;
 extern crate rusqlite;
 extern crate rustc_serialize;
@@ -389,6 +390,7 @@ fn make_clfr_str(clfr: &Classifier) -> String {
 fn main() {
   let DECK_ID : i64 = 4760850724594777;
   let MODEL_ID : i64 = 1425274727596;
+  let timespec = time::get_time();
   let hsk_words = get_hsk_words();
   let mut dict = parse_dict(include_str!("cedict_1_0_ts_utf-8_mdbg.txt"));
   dict.append(&mut parse_dict(include_str!("extra_dict.txt")));
@@ -427,7 +429,7 @@ fn main() {
                   + " " + &dword.trad
                   + " " + &dword.pinyin)),  // guid
             &MODEL_ID,  // mid
-            &0,  // mod
+            &timespec.sec,  // mod
             &-1,  // usn
             &format!(" HSK_Level_{} ", word.level),  // tags
             &(dword.simp.to_string() + "\x1f"
@@ -452,7 +454,7 @@ fn main() {
               &note_id,  // nid
               &DECK_ID,  // did
               &ord,  // ord
-              &0,  // mod
+              &timespec.sec,  // mod
               &-1,  // usn
               &0,  // type (=0 for non-Cloze)
               &0,  // queue
