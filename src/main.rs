@@ -76,7 +76,7 @@ fn parse_dict<'a>(dict: &'a str) -> Vec<CedictWord<'a>> {
         let mut clfrs = Vec::new();
         for i in 0..defs.len() {
           if starts_with(defs[i], "CL:") {
-            let mut pieces = defs.remove(i).split(":");
+            let mut pieces = defs.remove(i).splitn(2, ":");
             pieces.next();
             for clfr_str in pieces.next().unwrap().split(",") {
               let clfr_re = regex!(r"([^\[\|]+)(?:\|([^\[]+))?\[(.+)\]");
