@@ -8,12 +8,11 @@ extern crate rusqlite;
 extern crate rustc_serialize;
 extern crate yaml;
 
-use std::collections::HashMap;
-use std::collections::BTreeMap;
-use std::fs::OpenOptions;
-use std::path::Path;
 use crypto::digest::Digest;
 use rustc_serialize::json;
+use std::collections::BTreeMap;
+use std::collections::HashMap;
+use std::fs::OpenOptions;
 use yaml::constructor::*;
 
 struct HskWord {
@@ -60,8 +59,8 @@ fn starts_with(s: &str, prefix: &str) -> bool {
   loop {
     match (sc.next(), prefixc.next()) {
       (Some(c1), Some(c2)) => if c1 != c2 { return false; },
-      (Some(c), None) => { return true; },
-      (None, Some(c)) => { return false; },
+      (Some(_), None) => { return true; },
+      (None, Some(_)) => { return false; },
       (None, None) => { return true; },
     }
   }
