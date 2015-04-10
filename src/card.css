@@ -24,6 +24,10 @@
   font-size: 2em;
 }
 
+.classifier {
+  font-size: 1.2em;
+}
+
 .defs_wrapper > ol {
   display: inline-block;
   text-align: left;

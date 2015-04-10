@@ -13,7 +13,11 @@
       {{Pinyin}}
     </div>
 
-    {{#Classifier}}CL: {{Classifier}}{{/Classifier}}
+    {{#Classifier}}
+    <div class="classifier">
+      CL: {{Classifier}}
+    </div>
+    {{/Classifier}}
 - name: Simplified
   qfmt: |
     <div class="character">
@@ -35,7 +39,11 @@
     </div>
     {{/Traditional}}
 
-    {{#Classifier}}CL: {{Classifier}}<br>{{/Classifier}}
+    {{#Classifier}}
+    <div class="classifier">
+      CL: {{Classifier}}
+    </div>
+    {{/Classifier}}
 
     {{English}}
 - name: Traditional
@@ -57,7 +65,11 @@
       <span class="character_type">&nbsp;&nbsp;Simp</span>
     </div>
 
-    {{#Classifier}}CL: {{Classifier}}{{/Classifier}}
+    {{#Classifier}}
+    <div class="classifier">
+      CL: {{Classifier}}
+    </div>
+    {{/Classifier}}
 
     {{English}}
 - name: Pinyin
@@ -75,4 +87,9 @@
     <div class="character">
       {{Simplified}}{{#Traditional}}|{{Traditional}}{{/Traditional}}
     </div>
-    {{#Classifier}}CL: {{Classifier}}{{/Classifier}}
+
+    {{#Classifier}}
+    <div class="classifier">
+      CL: {{Classifier}}
+    </div>
+    {{/Classifier}}
