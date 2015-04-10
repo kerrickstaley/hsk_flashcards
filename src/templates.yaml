@@ -59,8 +59,6 @@
 
     {{#Classifier}}CL: {{Classifier}}{{/Classifier}}
 
-    <br>
-
     {{English}}
 - name: Pinyin
   qfmt: |
@@ -73,8 +71,6 @@
     <hr id=answer>
 
     {{English}}
-
-    <br>
 
     <div class="character">
       {{Simplified}}{{#Traditional}}|{{Traditional}}{{/Traditional}}
