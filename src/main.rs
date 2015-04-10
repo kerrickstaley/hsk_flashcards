@@ -15,18 +15,21 @@ use std::collections::HashMap;
 use std::fs::OpenOptions;
 use yaml::constructor::*;
 
+#[derive(Clone)]
 struct HskWord {
   simp: String,
   part_of_speech: String,  // usually ""
   level: u32,
 }
 
+#[derive(Clone)]
 struct Classifier<'a> {
   trad: &'a str,
   simp: &'a str,
   pinyin: &'a str,
 }
 
+#[derive(Clone)]
 struct CedictWord<'a> {
   trad: &'a str,
   simp: &'a str,
@@ -35,6 +38,7 @@ struct CedictWord<'a> {
   clfrs: Vec<Classifier<'a>>,
 }
 
+#[derive(Clone)]
 struct PreferredEntry {
   pinyin: String,
   trad: String,
@@ -185,9 +189,10 @@ fn get_preferred_entry_map() -> HashMap<String, PreferredEntry> {
 
 
 fn best_entry<'a>(word: &HskWord,
-                  entries: &'a Vec<&'a CedictWord<'a>>,
+                  index: &HashMap<String, Vec<&CedictWord<'a>>>,
                   preferred: &HashMap<String, PreferredEntry>)
-                  -> &'a CedictWord<'a> {
+                  -> CedictWord<'a> {
+  let entries = &index[&word.simp];
   let mut matches = 0;
   let key = if word.part_of_speech == "" {
     word.simp.to_string()
@@ -199,7 +204,7 @@ fn best_entry<'a>(word: &HskWord,
       Some(p) => {
         if (p.pinyin == "" || p.pinyin == entry.pinyin)
             && (p.trad == "" || p.trad == entry.trad) {
-          return entry;
+          return (*entry).clone();
         }
       },
       _ => ()
@@ -217,15 +222,42 @@ fn best_entry<'a>(word: &HskWord,
   }
   */
 
+  let mut rv = entries[0].clone();
+
   if matches >= 1 {
     for entry in entries {
       if is_good(entry) {
-        return *entry;
+        rv = (*entry).clone();
       }
     }
   }
 
-  entries[0]
+  if starts_with(rv.defs[0], "erhua variant of ") {
+    let mut actual_simp = "".to_string();
+    // TODO: this is terrible, just terrible. Tixif!
+    let mut prev = '\0';
+    for c in word.simp.chars() {
+      if prev != '\0' {
+        actual_simp.push(prev);
+      }
+      prev = c;
+    }
+    let actual_word = best_entry(
+        &HskWord{
+            simp: actual_simp,
+            part_of_speech: word.part_of_speech.to_string(), // TODO: why is this needed?
+            level: word.level},
+        index,
+        preferred);
+    rv = CedictWord{
+        trad: rv.trad,
+        simp: rv.simp,
+        pinyin: rv.pinyin,
+        defs: actual_word.defs.clone(),
+        clfrs: actual_word.clfrs.clone()};
+  }
+
+  rv
 }
 
 fn guid_from_str(s : &str) -> String {
@@ -386,6 +418,7 @@ fn make_clfr_str(clfr: &Classifier) -> String {
  char + "(" + &prettify_pinyin(clfr.pinyin) + ")"
 }
 
+
 fn main() {
   let DECK_ID : i64 = 1428564061183;
   let MODEL_ID : i64 = 1425274727596;
@@ -413,7 +446,7 @@ fn main() {
       println!("{} not in dict", word.simp);
       continue;
     }
-    let ref dword = best_entry(&word, &index[&word.simp], &preferred);
+    let dword = best_entry(&word, &index, &preferred);
     let trad = if dword.simp == dword.trad {
       ""
     } else {
