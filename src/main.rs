@@ -362,11 +362,11 @@ fn prettify_pinyin(s: &str) -> String {
 
 fn make_defs_html(items: &Vec<&str>) -> String {
   // doesn't perform any escaping
-  let mut rv = "<div class=\"defs_wrapper\">\n<ol>".to_string();
+  let mut rv = "<ol>".to_string();
   for item in items {
     rv = rv + "\n<li>\n" + item + "\n</li>";
   }
-  return rv + "\n</ol>\n</div>";
+  return rv + "\n</ol>";
 }
 
 fn yaml_string(y: YamlStandardData) -> String {

@@ -28,14 +28,15 @@
   font-size: 1.2em;
 }
 
-.defs_wrapper > ol {
+.english_wrapper > ol {
   display: inline-block;
   text-align: left;
 }
 
 @media (min-width: 480px) {
-  /* Anki supports media queries :D */
-  .defs_wrapper {
+  /* On devices at least 480px wide, put a 15% margin on both sides of the
+     English definitions list */
+  .english_wrapper {
     margin-left: 15%;
     margin-right: 15%;
   }

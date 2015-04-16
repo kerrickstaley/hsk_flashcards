@@ -1,6 +1,8 @@
 - name: English
   qfmt: |
-    {{English}}
+    <div class="english_wrapper">
+      {{English}}
+    </div>
   afmt: |
     {{FrontSide}}
 
@@ -45,7 +47,9 @@
     </div>
     {{/Classifier}}
 
-    {{English}}
+    <div class="english_wrapper">
+      {{English}}
+    </div>
 - name: Traditional
   qfmt: |
     <div class="character">
@@ -71,7 +75,9 @@
     </div>
     {{/Classifier}}
 
-    {{English}}
+    <div class="english_wrapper">
+      {{English}}
+    </div>
 - name: Pinyin
   qfmt: |
     <div class="pinyin">
@@ -82,7 +88,9 @@
 
     <hr id=answer>
 
-    {{English}}
+    <div class="english_wrapper">
+      {{English}}
+    </div>
 
     <div class="character">
       {{Simplified}}{{#Traditional}}|{{Traditional}}{{/Traditional}}
