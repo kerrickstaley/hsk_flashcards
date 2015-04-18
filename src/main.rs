@@ -435,4 +435,16 @@ fn main() {
   }
   // Set due = id + 1
   conn.execute_batch("UPDATE cards SET due = id + 1;").unwrap();
+
+  // Kill duplicate notes: 等, 对, 过, 花 each only have one entry in CC-CEDICT
+  for row in conn.prepare(concat!(
+                              "select a.id, a.sfld",
+                              " from notes as a join notes as b",
+                              " on a.flds == b.flds where a.id > b.id"))
+                 .unwrap().query(&[]).unwrap().map(|row| row.unwrap()) {
+    let note_id : i64 = row.get(0);
+    // println!("deleting {}", row.get::<String>(1));
+    conn.execute("delete from cards where nid == ?", &[&note_id]).unwrap();
+    conn.execute("delete from notes where id == ?", &[&note_id]).unwrap();
+  }
 }
