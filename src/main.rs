@@ -403,7 +403,7 @@ fn main() {
             &dword.simp,  // sfld
             &0,  // csum, can be ignored
             &0,  // flags
-            &"".to_string(),  // data
+            &"",  // data
         ]).unwrap();
     let note_id = conn.last_insert_rowid();
     for ord in 0..4 {
