@@ -8,6 +8,7 @@ extern crate rusqlite;
 extern crate rustc_serialize;
 extern crate yaml;
 
+mod cedict;
 use crypto::digest::Digest;
 use rustc_serialize::json;
 use std::collections::BTreeMap;
@@ -20,22 +21,6 @@ struct HskWord {
   simp: String,
   part_of_speech: String,  // usually ""
   level: u32,
-}
-
-#[derive(Clone)]
-struct Classifier<'a> {
-  trad: &'a str,
-  simp: &'a str,
-  pinyin: &'a str,
-}
-
-#[derive(Clone)]
-struct CedictWord<'a> {
-  trad: &'a str,
-  simp: &'a str,
-  pinyin: &'a str,
-  defs: Vec<&'a str>,
-  clfrs: Vec<Classifier<'a>>,
 }
 
 #[derive(Clone)]
@@ -70,62 +55,7 @@ fn starts_with(s: &str, prefix: &str) -> bool {
   }
 }
 
-fn parse_dict<'a>(dict: &'a str) -> Vec<CedictWord<'a>> {
-  let mut rv = Vec::new();
-  for line in dict.split("\n") {
-    let entry_re = regex!(r"(.+?) (.+?) \[(.+?)\] /(.+)/");
-    match entry_re.captures(line) {
-      Some(cap) => {
-        let mut defs: Vec<&str> = cap.at(4).unwrap_or("").split("/").collect();
-        let mut clfrs = Vec::new();
-        for i in 0..defs.len() {
-          if starts_with(defs[i], "CL:") {
-            let mut pieces = defs.remove(i).splitn(2, ":");
-            pieces.next();
-            for clfr_str in pieces.next().unwrap().split(",") {
-              let clfr_re = regex!(r"([^\[\|]+)(?:\|([^\[]+))?\[(.+)\]");
-              match clfr_re.captures(clfr_str) {
-                Some(cap) => {
-                  clfrs.push(
-                      Classifier{
-                          trad: cap.at(1).unwrap_or(""),
-                          simp: cap.at(2).unwrap_or(cap.at(1).unwrap_or("")),
-                          pinyin: cap.at(3).unwrap_or(""),
-                      }
-                  );
-                },
-                _ => { println!("Couldn't parse {} as a classifier", clfr_str) },
-              }
-            }
-            break;
-          }
-        }
-        rv.push(
-            CedictWord{trad: cap.at(1).unwrap_or(""),
-                        simp: cap.at(2).unwrap_or(""),
-                        pinyin: cap.at(3).unwrap_or(""),
-                        defs: defs,
-                        clfrs: clfrs});
-      },
-      None => (),
-    }
-  }
-  rv
-}
-
-fn get_dict_index<'a>(ccedict : &'a Vec<CedictWord<'a>>) -> HashMap<String, Vec<&'a CedictWord<'a>>> {
-  let mut rv = HashMap::new();
-  for i in 0..ccedict.len() {
-    let key = ccedict[i].simp;
-    if !rv.contains_key(key) {
-      rv.insert(key.to_string(), Vec::new());
-    }
-    rv.get_mut(key).unwrap().push(&ccedict[i]);
-  }
-  rv
-}
-
-fn is_good(entry: &CedictWord) -> bool {
+fn is_good(entry: &cedict::Entry) -> bool {
   let reference_re = regex!(r"^variant of |old variant of |^see [^ ]+\[[^\]]+\]$");
   if reference_re.is_match(entry.defs[0]) {
     return false;
@@ -189,9 +119,9 @@ fn get_preferred_entry_map() -> HashMap<String, PreferredEntry> {
 
 
 fn best_entry<'a>(word: &HskWord,
-                  index: &HashMap<String, Vec<&CedictWord<'a>>>,
+                  index: &HashMap<String, Vec<&cedict::Entry<'a>>>,
                   preferred: &HashMap<String, PreferredEntry>)
-                  -> CedictWord<'a> {
+                  -> cedict::Entry<'a> {
   let entries = &index[&word.simp];
   let mut matches = 0;
   let key = if word.part_of_speech == "" {
@@ -249,7 +179,7 @@ fn best_entry<'a>(word: &HskWord,
             level: word.level},
         index,
         preferred);
-    rv = CedictWord{
+    rv = cedict::Entry{
         trad: rv.trad,
         simp: rv.simp,
         pinyin: rv.pinyin,
@@ -409,7 +339,7 @@ fn make_col_sql() -> String {
       .replace("CARDCSS", &json::encode(&include_str!("card.css")).unwrap())
 }
 
-fn make_clfr_str(clfr: &Classifier) -> String {
+fn make_clfr_str(clfr: &cedict::Classifier) -> String {
  let char = if clfr.simp == clfr.trad {
    clfr.simp.to_string()
  } else {
@@ -424,9 +354,9 @@ fn main() {
   let MODEL_ID : i64 = 1425274727596;
   let timespec = time::get_time();
   let hsk_words = get_hsk_words();
-  let mut dict = parse_dict(include_str!("cedict_1_0_ts_utf-8_mdbg.txt"));
-  dict.append(&mut parse_dict(include_str!("extra_dict.txt")));
-  let index = get_dict_index(&dict);
+  let mut dict = cedict::parse_dict(include_str!("cedict_1_0_ts_utf-8_mdbg.txt"));
+  dict.append(&mut cedict::parse_dict(include_str!("extra_dict.txt")));
+  let index = cedict::get_dict_index(&dict);
   let preferred = get_preferred_entry_map();
 
   // make /tmp/collection.anki2 a zero-length file
