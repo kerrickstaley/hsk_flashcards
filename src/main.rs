@@ -265,10 +265,8 @@ fn prettify_pinyin(s: &str) -> String {
     let mut curr = syl_iter.next().unwrap();
     for next in syl_iter {
       if curr == 'u' && next == ':' {
-        continue;
-      }
-      if curr == ':' {
         curr = 'ü';
+        continue;
       }
       if "ae".contains(curr) {
         rv.push(toned_char(curr, tone));
@@ -276,7 +274,7 @@ fn prettify_pinyin(s: &str) -> String {
       } else if !toned && curr == 'o' && next == 'u' {
         rv.push(toned_char(curr, tone));
         toned = true;
-      } else if !toned && "aeiouú".contains(curr) && !"aeiouü".contains(next) {
+      } else if !toned && "aeiouü".contains(curr) && !"aeiouü".contains(next) {
         rv.push(toned_char(curr, tone));
         toned = true;
       } else {
