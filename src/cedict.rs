@@ -37,7 +37,8 @@ pub fn parse_dict<'a>(dict: &'a str) -> Vec<Entry<'a>> {
       Some(cap) => {
         let mut defs: Vec<&str> = cap.at(4).unwrap_or("").split("/").collect();
         let mut clfrs = Vec::new();
-        for i in 0..defs.len() {
+        let mut i = 0;
+        while i < defs.len() {
           if starts_with(defs[i], "CL:") {
             let mut pieces = defs.remove(i).splitn(2, ":");
             pieces.next();
@@ -56,7 +57,8 @@ pub fn parse_dict<'a>(dict: &'a str) -> Vec<Entry<'a>> {
                 _ => { println!("Couldn't parse {} as a classifier", clfr_str) },
               }
             }
-            break;
+          } else {
+            i += 1;
           }
         }
         rv.push(
