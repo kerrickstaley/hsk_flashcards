@@ -370,6 +370,11 @@ fn main() {
   conn.execute_batch(&make_col_sql()).unwrap();
 
   for word in hsk_words {
+    if word.simp == "纪录" {
+      // This word is just a variant of 记录, which is already
+      // in the HSK word list. Skip it.
+      continue;
+    }
     if !index.contains_key(&word.simp) {
       println!("{} not in dict", word.simp);
       continue;
