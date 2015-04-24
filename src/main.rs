@@ -292,6 +292,10 @@ fn make_defs_html(items: &Vec<&str>) -> String {
   // doesn't perform any escaping
   let mut rv = "<ol>".to_string();
   for item in items {
+    if starts_with(item, "variant of ")
+       || starts_with(item, "old variant of ") {
+      continue;
+    }
     rv = rv + "<li>" + item + "</li>";
   }
   return rv + "</ol>";
