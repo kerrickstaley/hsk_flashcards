@@ -292,9 +292,9 @@ fn make_defs_html(items: &Vec<&str>) -> String {
   // doesn't perform any escaping
   let mut rv = "<ol>".to_string();
   for item in items {
-    rv = rv + "\n<li>\n" + item + "\n</li>";
+    rv = rv + "<li>" + item + "</li>";
   }
-  return rv + "\n</ol>";
+  return rv + "</ol>";
 }
 
 fn yaml_string(y: YamlStandardData) -> String {
