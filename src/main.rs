@@ -401,12 +401,11 @@ fn main() {
             &timespec.sec,  // mod
             &-1,  // usn
             &format!(" HSK_Level_{} ", word.level),  // tags
-            &(dword.simp.to_string() + "\x1f"
-              + &trad + "\x1f"
-              + &prettify_pinyin(dword.pinyin) + "\x1f"
-              + &make_defs_html(&dword.defs) + "\x1f"
-              + &dword.clfrs.iter().map(make_clfr_str).collect::<Vec<_>>().connect(", ") + "\x1f"
-              + "\x1f\x1f"), // flds
+            &(dword.simp.to_string()  // flds
+              + "\x1f" + &trad
+              + "\x1f" + &prettify_pinyin(dword.pinyin)
+              + "\x1f" + &make_defs_html(&dword.defs)
+              + "\x1f" + &dword.clfrs.iter().map(make_clfr_str).collect::<Vec<_>>().connect(", ")),
             &dword.simp,  // sfld
             &0,  // csum, can be ignored
             &0,  // flags

@@ -73,33 +73,6 @@ INSERT INTO col VALUES(
                     "rtl": false,
                     "size": 20,
                     "sticky": false
-                },
-                {
-                    "font": "Liberation Sans",
-                    "media": [],
-                    "name": "Character Hint",
-                    "ord": 5,
-                    "rtl": false,
-                    "size": 20,
-                    "sticky": false
-                },
-                {
-                    "font": "Liberation Sans",
-                    "media": [],
-                    "name": "English Hint",
-                    "ord": 6,
-                    "rtl": false,
-                    "size": 20,
-                    "sticky": false
-                },
-                {
-                    "font": "Liberation Sans",
-                    "media": [],
-                    "name": "Pinyin Hint",
-                    "ord": 7,
-                    "rtl": false,
-                    "size": 20,
-                    "sticky": false
                 }
             ],
             "id": "1425274727596",
