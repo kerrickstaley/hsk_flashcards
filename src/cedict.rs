@@ -5,6 +5,7 @@ pub struct Entry<'a> {
   pub trad: &'a str,
   pub simp: &'a str,
   pub pinyin: &'a str,
+  pub tw_pinyin: &'a str,
   pub defs: Vec<&'a str>,
   pub clfrs: Vec<Classifier<'a>>,
 }
@@ -37,6 +38,7 @@ pub fn parse_dict<'a>(dict: &'a str) -> Vec<Entry<'a>> {
       Some(cap) => {
         let mut defs: Vec<&str> = cap.at(4).unwrap_or("").split("/").collect();
         let mut clfrs = Vec::new();
+        let mut tw_pinyin = "";
         let mut i = 0;
         while i < defs.len() {
           if starts_with(defs[i], "CL:") {
@@ -57,6 +59,18 @@ pub fn parse_dict<'a>(dict: &'a str) -> Vec<Entry<'a>> {
                 _ => { println!("Couldn't parse {} as a classifier", clfr_str) },
               }
             }
+          } else if starts_with(defs[i], "Taiwan pr. ") {
+            let tw_pinyin_re = regex!(r"^Taiwan pr\. \[([a-zA-Z0-9: ]+)\]$");
+            match tw_pinyin_re.captures(defs[i]) {
+              Some(cap) => {
+                tw_pinyin = cap.at(1).unwrap();
+                defs.remove(i);
+              },
+              _ => {
+                // println!("Couldn't parse {} as a Taiwan pronunciation", defs[i]);
+                i += 1;
+              }
+            }
           } else {
             i += 1;
           }
@@ -65,6 +79,7 @@ pub fn parse_dict<'a>(dict: &'a str) -> Vec<Entry<'a>> {
             Entry{trad: cap.at(1).unwrap_or(""),
                   simp: cap.at(2).unwrap_or(""),
                   pinyin: cap.at(3).unwrap_or(""),
+                  tw_pinyin: tw_pinyin,
                   defs: defs,
                   clfrs: clfrs});
       },

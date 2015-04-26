@@ -73,6 +73,15 @@ INSERT INTO col VALUES(
                     "rtl": false,
                     "size": 20,
                     "sticky": false
+                },
+                {
+                    "font": "Liberation Sans",
+                    "media": [],
+                    "name": "Taiwan Pinyin",
+                    "ord": 5,
+                    "rtl": false,
+                    "size": 20,
+                    "sticky": false
                 }
             ],
             "id": "1425274727596",

@@ -183,6 +183,7 @@ fn best_entry<'a>(word: &HskWord,
         trad: rv.trad,
         simp: rv.simp,
         pinyin: rv.pinyin,
+        tw_pinyin: actual_word.tw_pinyin.clone(),
         defs: actual_word.defs.clone(),
         clfrs: actual_word.clfrs.clone()};
   }
@@ -236,6 +237,9 @@ fn toned_char(c: char, tone: usize) -> char {
 
 fn prettify_pinyin(s: &str) -> String {
   let mut rv = String::new();
+  if s == "" {
+    return rv
+  }
   let mut first = true;
   for syl in s.split(" ") {
     if first {
@@ -405,7 +409,8 @@ fn main() {
               + "\x1f" + &trad
               + "\x1f" + &prettify_pinyin(dword.pinyin)
               + "\x1f" + &make_defs_html(&dword.defs)
-              + "\x1f" + &dword.clfrs.iter().map(make_clfr_str).collect::<Vec<_>>().connect(", ")),
+              + "\x1f" + &dword.clfrs.iter().map(make_clfr_str).collect::<Vec<_>>().connect(", ")
+              + "\x1f" + &prettify_pinyin(dword.tw_pinyin)),
             &dword.simp,  // sfld
             &0,  // csum, can be ignored
             &0,  // flags

@@ -12,7 +12,7 @@
     </div>
 
     <div class="pinyin">
-      {{Pinyin}}
+      {{Pinyin}}{{#Taiwan Pinyin}} | {{Taiwan Pinyin}}{{/Taiwan Pinyin}}
     </div>
 
     {{#Classifier}}
@@ -31,7 +31,7 @@
     <hr id=answer>
 
     <div class="pinyin">
-      {{Pinyin}}
+      {{Pinyin}}{{#Taiwan Pinyin}} | {{Taiwan Pinyin}}{{/Taiwan Pinyin}}
     </div>
 
     {{#Traditional}}
@@ -61,7 +61,7 @@
     <hr id=answer>
 
     <div class="pinyin">
-      {{Pinyin}}
+      {{Pinyin}}{{#Taiwan Pinyin}} | {{Taiwan Pinyin}}{{/Taiwan Pinyin}}
     </div>
 
     <div class="character_wrapper">
@@ -81,7 +81,7 @@
 - name: Pinyin
   qfmt: |
     <div class="pinyin">
-      {{Pinyin}}
+      {{Pinyin}}{{#Taiwan Pinyin}} | {{Taiwan Pinyin}}{{/Taiwan Pinyin}}
     </div>
   afmt: |
     {{FrontSide}}
