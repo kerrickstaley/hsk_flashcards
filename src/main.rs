@@ -297,7 +297,8 @@ fn make_defs_html(items: &Vec<&str>) -> String {
   let mut rv = "<ol>".to_string();
   for item in items {
     if starts_with(item, "variant of ")
-       || starts_with(item, "old variant of ") {
+       || starts_with(item, "old variant of ")
+       || starts_with(item, "also written ") {
       continue;
     }
     rv = rv + "<li>" + item + "</li>";
