@@ -9,11 +9,9 @@ extern crate rustc_serialize;
 extern crate yaml;
 
 mod cedict;
+mod anki;
 use crypto::digest::Digest;
-use rustc_serialize::json;
-use std::collections::BTreeMap;
 use std::collections::HashMap;
-use std::fs::OpenOptions;
 use yaml::constructor::*;
 
 #[derive(Clone)]
@@ -205,10 +203,10 @@ fn guid_from_str(s : &str) -> String {
   }
 
   // convert to base91
-  let BASE91_TABLE = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '!', '#', '$', '%', '&', '(', ')', '*', '+', ',', '-', '.', '/', ':', ';', '<', '=', '>', '?', '@', '[', ']', '^', '_', '`', '{', '|', '}', '~'];
+  let base91_table = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '!', '#', '$', '%', '&', '(', ')', '*', '+', ',', '-', '.', '/', ':', ';', '<', '=', '>', '?', '@', '[', ']', '^', '_', '`', '{', '|', '}', '~'];
   let mut rv_reversed = String::with_capacity(10);
   while val > 0 {
-    rv_reversed.push(BASE91_TABLE[(val % 91) as usize]);
+    rv_reversed.push(base91_table[(val % 91) as usize]);
     val /= 91;
   }
   rv_reversed.chars().rev().collect()
@@ -306,46 +304,6 @@ fn make_defs_html(items: &Vec<&str>) -> String {
   return rv + "</ol>";
 }
 
-fn yaml_string(y: YamlStandardData) -> String {
-  match y {
-    YamlStandardData::YamlString(s) => s,
-    _ => panic!("data wasn't a string"),
-  }
-}
-
-fn make_col_sql() -> String {
-  let mut tmpls = Vec::new();
-  let yaml_doc = yaml::parse_bytes_utf8(
-          include_str!("templates.yaml").as_bytes())
-      .unwrap()
-      .pop();
-  let seq = match yaml_doc {
-    Some(YamlStandardData::YamlSequence(s)) => s,
-    _ => panic!("data wasn't a sequence"),
-  };
-  let mut ord = 0;
-  for item in seq {
-    let map = match item {
-      YamlStandardData::YamlMapping(m) => m,
-      _ => panic!("data wasn't a mapping"),
-    };
-    let mut outmap = BTreeMap::new();
-    for (key, val) in map {
-      outmap.insert(yaml_string(key), json::Json::String(yaml_string(val)));
-    }
-    outmap.insert("bafmt".to_string(), json::Json::String("".to_string()));
-    outmap.insert("bqfmt".to_string(), json::Json::String("".to_string()));
-    outmap.insert("did".to_string(), json::Json::Null);
-    outmap.insert("ord".to_string(), json::Json::I64(ord));
-    ord += 1;
-    tmpls.push(outmap);
-  }
-
-  include_str!("apkg_col.txt")
-      .replace("TMPLS", &json::encode(&tmpls).unwrap())
-      .replace("CARDCSS", &json::encode(&include_str!("card.css")).unwrap())
-}
-
 fn make_clfr_str(clfr: &cedict::Classifier) -> String {
  let char = if clfr.simp == clfr.trad {
    clfr.simp.to_string()
@@ -357,26 +315,14 @@ fn make_clfr_str(clfr: &cedict::Classifier) -> String {
 
 
 fn main() {
-  let DECK_ID : i64 = 1428564061183;
-  let MODEL_ID : i64 = 1425274727596;
-  let timespec = time::get_time();
   let hsk_words = get_hsk_words();
   let mut dict = cedict::parse_dict(include_str!("cedict_1_0_ts_utf-8_mdbg.txt"));
   dict.append(&mut cedict::parse_dict(include_str!("extra_dict.txt")));
   let index = cedict::get_dict_index(&dict);
   let preferred = get_preferred_entry_map();
 
-  // make /tmp/collection.anki2 a zero-length file
-  OpenOptions::new()
-      .create(true)
-      .write(true)
-      .truncate(true)
-      .open("/tmp/collection.anki2")
-      .unwrap();
-
-  let conn = rusqlite::SqliteConnection::open(&std::path::Path::new("/tmp/collection.anki2")).unwrap();
-  conn.execute_batch(include_str!("apkg_schema.txt")).unwrap();
-  conn.execute_batch(&make_col_sql()).unwrap();
+  let apkg = anki::AnkiPackage::new(
+      "HSK", include_str!("flds.json"), include_str!("templates.yaml"), include_str!("card.css"));
 
   for word in hsk_words {
     if word.simp == "纪录" {
@@ -394,69 +340,40 @@ fn main() {
     } else {
       dword.trad
     };
-    conn.execute(
-        "INSERT INTO notes VALUES(null,?,?,?,?,?,?,?,?,?,?);",
-        &[
-            &guid_from_str(
-                &("kerrick hsk".to_string()
-                  + " " + &dword.simp
-                  + " " + &dword.trad
-                  + " " + &dword.pinyin)),  // guid
-            &MODEL_ID,  // mid
-            &timespec.sec,  // mod
-            &-1,  // usn
-            &format!(" HSK_Level_{} ", word.level),  // tags
-            &(dword.simp.to_string()  // flds
-              + "\x1f" + &trad
-              + "\x1f" + &prettify_pinyin(dword.pinyin)
-              + "\x1f" + &make_defs_html(&dword.defs)
-              + "\x1f" + &dword.clfrs.iter().map(make_clfr_str).collect::<Vec<_>>().connect(", ")
-              + "\x1f" + &prettify_pinyin(dword.tw_pinyin)),
-            &dword.simp,  // sfld
-            &0,  // csum, can be ignored
-            &0,  // flags
-            &"",  // data
-        ]).unwrap();
-    let note_id = conn.last_insert_rowid();
+    let note_id = apkg.add_note(
+        &guid_from_str(
+            &("kerrick hsk".to_string()
+              + " " + &dword.simp
+              + " " + &dword.trad
+              + " " + &dword.pinyin)),
+        &format!(" HSK_Level_{} ", word.level),
+        &(dword.simp.to_string()
+            + "\x1f" + &trad
+            + "\x1f" + &prettify_pinyin(dword.pinyin)
+            + "\x1f" + &make_defs_html(&dword.defs)
+            + "\x1f" + &dword.clfrs.iter().map(make_clfr_str).collect::<Vec<_>>().connect(", ")
+            + "\x1f" + &prettify_pinyin(dword.tw_pinyin)),
+        &dword.simp);
     for ord in 0..4 {
       if ord == 2 && trad == "" {
         continue;
       }
-      conn.execute(
-          "INSERT INTO cards VALUES(null,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);",
-          &[
-              &note_id,  // nid
-              &DECK_ID,  // did
-              &ord,  // ord
-              &timespec.sec,  // mod
-              &-1,  // usn
-              &0,  // type (=0 for non-Cloze)
-              &0,  // queue
-              &0,  // due
-              &0,  // ivl
-              &0,  // factor
-              &0,  // reps
-              &0,  // lapses
-              &0,  // left
-              &0,  // odue
-              &0,  // odid
-              &0,  // flags
-              &"".to_string(),  // data
-          ]).unwrap();
+      apkg.add_card(note_id, ord);
     }
   }
   // Set due = id + 1
-  conn.execute_batch("UPDATE cards SET due = id + 1;").unwrap();
+  apkg.conn.execute_batch("UPDATE cards SET due = id + 1;").unwrap();
 
   // Kill duplicate notes: 等, 对, 过, 花 each only have one entry in CC-CEDICT
-  for row in conn.prepare(concat!(
-                              "select a.id, a.sfld",
-                              " from notes as a join notes as b",
-                              " on a.flds == b.flds where a.id > b.id"))
-                 .unwrap().query(&[]).unwrap().map(|row| row.unwrap()) {
+  for row in apkg.conn.prepare(
+      concat!(
+          "select a.id, a.sfld",
+          " from notes as a join notes as b",
+          " on a.flds == b.flds where a.id > b.id"))
+      .unwrap().query(&[]).unwrap().map(|row| row.unwrap()) {
     let note_id : i64 = row.get(0);
     // println!("deleting {}", row.get::<String>(1));
-    conn.execute("delete from cards where nid == ?", &[&note_id]).unwrap();
-    conn.execute("delete from notes where id == ?", &[&note_id]).unwrap();
+    apkg.conn.execute("delete from cards where nid == ?", &[&note_id]).unwrap();
+    apkg.conn.execute("delete from notes where id == ?", &[&note_id]).unwrap();
   }
 }

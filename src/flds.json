@@ -1,0 +1,56 @@
+[
+    {
+        "font": "Liberation Sans",
+        "media": [],
+        "name": "Simplified",
+        "ord": 0,
+        "rtl": false,
+        "size": 20,
+        "sticky": false
+    },
+    {
+        "font": "Liberation Sans",
+        "media": [],
+        "name": "Traditional",
+        "ord": 1,
+        "rtl": false,
+        "size": 20,
+        "sticky": false
+    },
+    {
+        "font": "Liberation Sans",
+        "media": [],
+        "name": "Pinyin",
+        "ord": 2,
+        "rtl": false,
+        "size": 12,
+        "sticky": false
+    },
+    {
+        "font": "Liberation Sans",
+        "media": [],
+        "name": "English",
+        "ord": 3,
+        "rtl": false,
+        "size": 12,
+        "sticky": false
+    },
+    {
+        "font": "Liberation Sans",
+        "media": [],
+        "name": "Classifier",
+        "ord": 4,
+        "rtl": false,
+        "size": 20,
+        "sticky": false
+    },
+    {
+        "font": "Liberation Sans",
+        "media": [],
+        "name": "Taiwan Pinyin",
+        "ord": 5,
+        "rtl": false,
+        "size": 20,
+        "sticky": false
+    }
+]

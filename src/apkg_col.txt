@@ -28,67 +28,12 @@ INSERT INTO col VALUES(
         "1425274727596": {
             "css": CARDCSS,
             "did": 1411440783087,
-            "flds": [
-                {
-                    "font": "Liberation Sans",
-                    "media": [],
-                    "name": "Simplified",
-                    "ord": 0,
-                    "rtl": false,
-                    "size": 20,
-                    "sticky": false
-                },
-                {
-                    "font": "Liberation Sans",
-                    "media": [],
-                    "name": "Traditional",
-                    "ord": 1,
-                    "rtl": false,
-                    "size": 20,
-                    "sticky": false
-                },
-                {
-                    "font": "Liberation Sans",
-                    "media": [],
-                    "name": "Pinyin",
-                    "ord": 2,
-                    "rtl": false,
-                    "size": 12,
-                    "sticky": false
-                },
-                {
-                    "font": "Liberation Sans",
-                    "media": [],
-                    "name": "English",
-                    "ord": 3,
-                    "rtl": false,
-                    "size": 12,
-                    "sticky": false
-                },
-                {
-                    "font": "Liberation Sans",
-                    "media": [],
-                    "name": "Classifier",
-                    "ord": 4,
-                    "rtl": false,
-                    "size": 20,
-                    "sticky": false
-                },
-                {
-                    "font": "Liberation Sans",
-                    "media": [],
-                    "name": "Taiwan Pinyin",
-                    "ord": 5,
-                    "rtl": false,
-                    "size": 20,
-                    "sticky": false
-                }
-            ],
+            "flds": FLDS,
             "id": "1425274727596",
             "latexPost": "\\end{document}",
             "latexPre": "\\documentclass[12pt]{article}\n\\special{papersize=3in,5in}\n\\usepackage{amssymb,amsmath}\n\\pagestyle{empty}\n\\setlength{\\parindent}{0in}\n\\begin{document}\n",
             "mod": 1425277891,
-            "name": "HSK",
+            "name": "NAME",
             "req": [
                 [
                     0,
@@ -169,7 +114,7 @@ INSERT INTO col VALUES(
                 2
             ],
             "mod": 1425278051,
-            "name": "HSK",
+            "name": "NAME",
             "newToday": [
                 163,
                 2
