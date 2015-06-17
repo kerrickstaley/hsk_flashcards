@@ -89,7 +89,7 @@ pub fn parse_dict<'a>(dict: &'a str) -> Vec<Entry<'a>> {
   rv
 }
 
-pub fn get_dict_index<'a>(ccedict : &'a Vec<Entry<'a>>) -> HashMap<String, Vec<&'a Entry<'a>>> {
+pub fn get_dict_index<'a, 'b>(ccedict : &'a Vec<Entry<'b>>) -> HashMap<String, Vec<&'a Entry<'b>>> {
   let mut rv = HashMap::new();
   for i in 0..ccedict.len() {
     let key = ccedict[i].simp;
