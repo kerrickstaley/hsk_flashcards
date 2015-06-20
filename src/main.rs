@@ -1,6 +1,5 @@
 #![feature(plugin)]
 #![plugin(regex_macros)]
-#![feature(collections)]
 extern crate crypto;
 extern crate time;
 extern crate regex;

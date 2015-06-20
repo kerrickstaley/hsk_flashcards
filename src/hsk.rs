@@ -116,27 +116,27 @@ fn get_preferred_entry_map() -> HashMap<String, PreferredEntry> {
 
 
 fn best_entry<'a>(word: &HskWord,
-                  index: &HashMap<String, Vec<&cedict::Entry<'a>>>,
+                  dict: &cedict::Dict<'a>,
                   preferred: &HashMap<String, PreferredEntry>)
                   -> cedict::Entry<'a> {
-  let entries = &index[&word.simp];
+  let entries = dict.search_simp(&word.simp);
   let mut matches = 0;
   let key = if word.part_of_speech == "" {
     word.simp.to_string()
   } else {
     word.simp.to_string() + " " + &word.part_of_speech
   };
-  for entry in entries {
+  for entry in &entries {
     match preferred.get(&key) {
       Some(p) => {
         if (p.pinyin == "" || p.pinyin == entry.pinyin)
             && (p.trad == "" || p.trad == entry.trad) {
-          return (*entry).clone();
+          return entry.clone();
         }
       },
       _ => ()
     }
-    if is_good(entry) {
+    if is_good(&entry) {
       matches += 1;
     }
   }
@@ -152,9 +152,9 @@ fn best_entry<'a>(word: &HskWord,
   let mut rv = entries[0].clone();
 
   if matches >= 1 {
-    for entry in entries {
-      if is_good(entry) {
-        rv = (*entry).clone();
+    for entry in &entries {
+      if is_good(&entry) {
+        rv = entry.clone();
       }
     }
   }
@@ -174,7 +174,7 @@ fn best_entry<'a>(word: &HskWord,
             simp: actual_simp,
             part_of_speech: word.part_of_speech.to_string(), // TODO: why is this needed?
             level: word.level},
-        index,
+        dict,
         preferred);
     rv = cedict::Entry{
         trad: rv.trad,
@@ -190,9 +190,7 @@ fn best_entry<'a>(word: &HskWord,
 
 pub fn get_chinese_notes() -> Vec<chinese_note::ChineseNote<'static>> {
   let hsk_words = get_hsk_words();
-  let mut dict = cedict::parse_dict(include_str!("cedict_1_0_ts_utf-8_mdbg.txt"));
-  dict.append(&mut cedict::parse_dict(include_str!("extra_dict.txt")));
-  let index = cedict::get_dict_index(&dict);
+  let dict = cedict::Dict::new_with_extra_entries(include_str!("extra_dict.txt"));
   let preferred = get_preferred_entry_map();
 
   let mut rv = Vec::new();
@@ -203,11 +201,11 @@ pub fn get_chinese_notes() -> Vec<chinese_note::ChineseNote<'static>> {
       // in the HSK word list. Skip it.
       continue;
     }
-    if !index.contains_key(&word.simp) {
+    if dict.search_simp(&word.simp).len() == 0 {
       println!("{} not in dict", word.simp);
       continue;
     }
-    let mut ce = best_entry(&word, &index, &preferred).clone();
+    let mut ce = best_entry(&word, &dict, &preferred).clone();
     if ce.simp == ce.trad {
       ce.trad = "";
     }
