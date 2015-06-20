@@ -31,7 +31,7 @@ fn parse_entry<'a>(entry_str: &'a str) -> Option<Entry<'a>> {
     let mut tw_pinyin = "";
     let mut i = 0;
     while i < defs.len() {
-      if starts_with(defs[i], "CL:") {
+      if defs[i].starts_with("CL:") {
         let mut pieces = defs.remove(i).splitn(2, ":");
         pieces.next();
         for clfr_str in pieces.next().unwrap().split(",") {
@@ -49,7 +49,7 @@ fn parse_entry<'a>(entry_str: &'a str) -> Option<Entry<'a>> {
             _ => { println!("Couldn't parse {} as a classifier", clfr_str) },
           }
         }
-      } else if starts_with(defs[i], "Taiwan pr. ") {
+      } else if defs[i].starts_with("Taiwan pr. ") {
         let tw_pinyin_re = regex!(r"^Taiwan pr\. \[([a-zA-Z0-9: ]+)\]$");
         match tw_pinyin_re.captures(defs[i]) {
           Some(cap) => {
@@ -176,18 +176,5 @@ impl<'a> Dict<'a> {
 
   pub fn search_simp(&self, simp: &str) -> Vec<Entry<'a>> {
     self.search(DictSearchParams{simp: Some(simp), trad: None, pinyin: None})
-  }
-}
-
-fn starts_with(s: &str, prefix: &str) -> bool {
-  let mut sc = s.chars();
-  let mut prefixc = prefix.chars();
-  loop {
-    match (sc.next(), prefixc.next()) {
-      (Some(c1), Some(c2)) => if c1 != c2 { return false; },
-      (Some(_), None) => { return true; },
-      (None, Some(_)) => { return false; },
-      (None, None) => { return true; },
-    }
   }
 }

@@ -13,19 +13,6 @@ mod anki;
 mod hsk;
 use crypto::digest::Digest;
 
-fn starts_with(s: &str, prefix: &str) -> bool {
-  let mut sc = s.chars();
-  let mut prefixc = prefix.chars();
-  loop {
-    match (sc.next(), prefixc.next()) {
-      (Some(c1), Some(c2)) => if c1 != c2 { return false; },
-      (Some(_), None) => { return true; },
-      (None, Some(_)) => { return false; },
-      (None, None) => { return true; },
-    }
-  }
-}
-
 fn guid_from_str(s : &str) -> String {
   let mut sha = crypto::sha2::Sha256::new();
   sha.input_str(s);
@@ -136,9 +123,9 @@ fn make_defs_html(items: &Vec<&str>) -> String {
   // doesn't perform any escaping
   let mut rv = "<ol>".to_string();
   for item in items {
-    if starts_with(item, "variant of ")
-       || starts_with(item, "old variant of ")
-       || starts_with(item, "also written ") {
+    if item.starts_with("variant of ")
+       || item.starts_with("old variant of ")
+       || item.starts_with("also written ") {
       continue;
     }
     rv = rv + "<li>" + item + "</li>";
