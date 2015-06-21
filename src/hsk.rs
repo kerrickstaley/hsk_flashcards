@@ -210,7 +210,7 @@ pub fn get_chinese_notes() -> Vec<chinese_note::ChineseNote<'static>> {
       ce.trad = "";
     }
     rv.push(chinese_note::ChineseNote{ce: ce,
-                                      tags: vec!(format!(" HSK_Level_{} ", word.level))});
+                                      tags: vec!(format!("HSK_Level_{}", word.level))});
   }
   rv
 }
