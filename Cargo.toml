@@ -7,8 +7,8 @@ authors = ["Kerrick Staley <kerrick@kerrickstaley.com>"]
 [dependencies]
 
 time = "0.1.24"
-regex = "0.1.27"
-regex_macros = "0.1.10"
+regex = "0.1.38"
+regex_macros = "0.1.20"
 rusqlite = "0.0.17"
 rust-crypto = "0.2.18"
 rustc-serialize = "0.3.15"
