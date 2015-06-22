@@ -11,8 +11,6 @@ use cedict;
 use std::collections::HashMap;
 use yaml::constructor::*;
 
-pub const ID_STR: &'static str = "kerrick hsk";
-
 #[derive(Clone)]
 struct HskWord {
   simp: String,
@@ -205,10 +203,7 @@ pub fn get_chinese_notes() -> Vec<chinese_note::ChineseNote<'static>> {
       println!("{} not in dict", word.simp);
       continue;
     }
-    let mut ce = best_entry(&word, &dict, &preferred).clone();
-    if ce.simp == ce.trad {
-      ce.trad = "";
-    }
+    let ce = best_entry(&word, &dict, &preferred).clone();
     rv.push(chinese_note::ChineseNote{ce: ce,
                                       tags: vec!(format!("HSK_Level_{}", word.level))});
   }

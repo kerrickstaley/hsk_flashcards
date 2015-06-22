@@ -6,6 +6,7 @@ authors = ["Kerrick Staley <kerrick@kerrickstaley.com>"]
 
 [dependencies]
 
+getopts = "0.2.11"
 time = "0.1.24"
 regex = "0.1.38"
 regex_macros = "0.1.20"

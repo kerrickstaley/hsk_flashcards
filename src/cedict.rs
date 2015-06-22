@@ -1,3 +1,4 @@
+use std::ascii::AsciiExt;
 use std::collections::HashMap;
 
 #[derive(Clone)]
@@ -18,9 +19,10 @@ pub struct Classifier<'a> {
 }
 
 pub struct DictSearchParams<'a> {
-  simp: Option<&'a str>,
-  trad: Option<&'a str>,
-  pinyin: Option<&'a str>,
+  pub simp: Option<&'a str>,
+  pub trad: Option<&'a str>,
+  // the case of .pinyin is ignored when searching
+  pub pinyin: Option<&'a str>,
 }
 
 fn parse_entry<'a>(entry_str: &'a str) -> Option<Entry<'a>> {
@@ -39,7 +41,7 @@ fn parse_entry<'a>(entry_str: &'a str) -> Option<Entry<'a>> {
           match clfr_re.captures(clfr_str) {
             Some(cap) => {
               clfrs.push(
-                  Classifier{
+                  Classifier {
                       trad: cap.at(1).unwrap_or(""),
                       simp: cap.at(2).unwrap_or(cap.at(1).unwrap_or("")),
                       pinyin: cap.at(3).unwrap_or(""),
@@ -107,7 +109,7 @@ fn entry_matches(entry: &Entry, params: &DictSearchParams) -> bool {
   }
   match params.pinyin {
     Some(pinyin) => {
-      if entry.pinyin != pinyin {
+      if entry.pinyin.to_ascii_lowercase() != pinyin.to_ascii_lowercase() {
         return false;
       }
     },
@@ -146,17 +148,23 @@ impl<'a> Dict<'a> {
     }
     rv.trad_idx = build_index(&rv.entries, |ent| ent.trad);
     rv.simp_idx = build_index(&rv.entries, |ent| ent.simp);
-    rv.pinyin_idx = build_index(&rv.entries, |ent| ent.pinyin);
+    rv.pinyin_idx = build_index(&rv.entries, |ent| &ent.pinyin.to_ascii_lowercase());
     rv
   }
 
   pub fn search(&self, params: DictSearchParams) -> Vec<Entry<'a>> {
+    // TODO: figure out if this can be expressed more succinctly
+    let pinyin_lower_string = match params.pinyin {
+      Some(p) => p.to_ascii_lowercase(),
+      None => "".to_string(),
+    };
+    let pinyin = params.pinyin.map(|_| &pinyin_lower_string as &str);
     // TODO: this is hella messy, tixif!
     let candidate_idxs = match params.trad.and_then(|x| self.trad_idx.get(x)) {
       Some(c) => c,
       None => match params.simp.and_then(|x| self.simp_idx.get(x)) {
         Some(c) => c,
-        None => match params.pinyin.and_then(|x| self.pinyin_idx.get(x)) {
+        None => match pinyin.and_then(|x| self.pinyin_idx.get(x)) {
           Some(c) => c,
           // either there were no candidates (HashMap lookup returned None) or the caller didn't
           // fill out any of params's fields
