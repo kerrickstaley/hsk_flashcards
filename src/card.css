@@ -6,6 +6,10 @@
   background-color: white;
 }
 
+.nobr {
+  white-space: nowrap;
+}
+
 .character_wrapper {
   position: relative;
 }
@@ -22,6 +26,11 @@
 
 .pinyin {
   font-size: 2em;
+}
+
+.words_with_same_pinyin {
+  font-size: 1.2em;
+  color: #888;
 }
 
 .classifier {

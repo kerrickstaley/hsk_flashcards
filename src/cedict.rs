@@ -2,6 +2,8 @@ use std::ascii::AsciiExt;
 use std::collections::HashMap;
 
 #[derive(Clone)]
+#[derive(Eq)]
+#[derive(PartialEq)]
 pub struct Entry<'a> {
   pub trad: &'a str,
   pub simp: &'a str,
@@ -12,6 +14,8 @@ pub struct Entry<'a> {
 }
 
 #[derive(Clone)]
+#[derive(Eq)]
+#[derive(PartialEq)]
 pub struct Classifier<'a> {
   pub trad: &'a str,
   pub simp: &'a str,

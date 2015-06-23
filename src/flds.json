@@ -52,5 +52,14 @@
         "rtl": false,
         "size": 20,
         "sticky": false
+    },
+    {
+        "font": "Liberation Sans",
+        "media": [],
+        "name": "Words With Same Pinyin",
+        "ord": 6,
+        "rtl": false,
+        "size": 20,
+        "sticky": false
     }
 ]

@@ -83,6 +83,11 @@
     <div class="pinyin">
       {{Pinyin}}{{#Taiwan Pinyin}} | {{Taiwan Pinyin}}{{/Taiwan Pinyin}}
     </div>
+    {{#Words With Same Pinyin}}
+      <div class="words_with_same_pinyin">
+        Not:&ensp;{{Words With Same Pinyin}}
+      </div>
+    {{/Words With Same Pinyin}}
   afmt: |
     {{FrontSide}}
 

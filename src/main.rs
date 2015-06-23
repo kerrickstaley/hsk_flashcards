@@ -15,6 +15,8 @@ mod hanping;
 mod hsk;
 
 use crypto::digest::Digest;
+use std::ascii::AsciiExt;
+use std::collections::HashMap;
 use std::io::Read;
 
 fn guid_from_str(s : &str) -> String {
@@ -168,6 +170,51 @@ fn print_usage(program: &str, opts: getopts::Options) {
   print!("{}", opts.usage(&brief));
 }
 
+fn get_pinyin_dupes<'a, 'b>(notes: &'a Vec<chinese_note::ChineseNote<'b>>)
+    -> HashMap<String, Vec<&'a cedict::Entry<'b>>> {
+  let mut rv = HashMap::<String, Vec<&'a cedict::Entry<'b>>>::new();
+  for note in notes {
+    let key = note.ce.pinyin.to_ascii_lowercase();
+    if rv.contains_key(&key) {
+      rv.get_mut(&key).unwrap().push(&note.ce);
+    } else {
+      let v = vec!(&note.ce);
+      rv.insert(key, v);
+    }
+  }
+  rv
+}
+
+fn get_pinyin_dupe_string_fn<'a, 'b>(notes: &'a Vec<chinese_note::ChineseNote<'b>>)
+    -> Box<Fn(&cedict::Entry) -> String + 'a> {
+  let dupes_map = get_pinyin_dupes(&notes);
+  // separate items with en spaces, to make them slightly easier to read
+  let en_space = '\u{2002}';
+  Box::new(move |entry| {
+    let mut first = true;
+    let mut rv = "".to_string();
+    if !dupes_map.contains_key(&entry.pinyin.to_ascii_lowercase()) {
+      println!("warning: {} not in dupes_map", entry.pinyin.to_ascii_lowercase());
+      return rv;
+    }
+    for dupe in dupes_map.get(&entry.pinyin.to_ascii_lowercase()).unwrap() {
+      if **dupe == *entry { continue; }
+      if !first {
+        rv.push(en_space);
+      }
+      rv.push_str("<span class=\"nobr\">");
+      rv.push_str(&dupe.simp);
+      if dupe.trad != dupe.simp {
+        rv.push('|');
+        rv.push_str(&dupe.trad);
+      }
+      rv.push_str("</span>");
+      first = false;
+    }
+    rv
+  })
+}
+
 fn main() {
   let mut opts = getopts::Options::new();
   // TODO: make this smart enough to handle all possible Hanping export formats (i.e. it shouldn't
@@ -234,8 +281,9 @@ fn main() {
   };
   let apkg = anki::AnkiPackage::new(
       title, include_str!("flds.json"), include_str!("templates.yaml"), include_str!("card.css"));
+  let pinyin_not_hint = get_pinyin_dupe_string_fn(&notes);
 
-  for note in notes {
+  for note in &notes {
     let trad = if note.ce.simp != note.ce.trad { note.ce.trad } else { "" };
     let note_id = apkg.add_note(
         &guid_from_str(
@@ -249,7 +297,8 @@ fn main() {
             + "\x1f" + &prettify_pinyin(note.ce.pinyin)
             + "\x1f" + &make_defs_html(&note.ce.defs)
             + "\x1f" + &note.ce.clfrs.iter().map(make_clfr_str).collect::<Vec<_>>().connect(", ")
-            + "\x1f" + &prettify_pinyin(note.ce.tw_pinyin)),
+            + "\x1f" + &prettify_pinyin(note.ce.tw_pinyin)
+            + "\x1f" + &pinyin_not_hint(&note.ce)),
         &note.ce.simp);
     for ord in 0..4 {
       if ord == 2 && trad == "" {
