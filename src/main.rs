@@ -289,7 +289,7 @@ fn main() {
         &guid_from_str(
             &(guid_prefix.to_string()
               + " " + &note.ce.simp
-              + " " + &trad
+              + " " + &note.ce.trad
               + " " + &note.ce.pinyin)),
         &(" ".to_string() + &note.tags.connect(" ") + " "),
         &(note.ce.simp.to_string()
