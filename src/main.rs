@@ -141,11 +141,17 @@ fn test_prettify_pinyin() {
 fn make_defs_html(items: &Vec<&str>) -> String {
   // doesn't perform any escaping
   let mut rv = "<ol>".to_string();
+  let mut first = true;
   for item in items {
     if item.starts_with("variant of ")
        || item.starts_with("old variant of ")
        || item.starts_with("also written ") {
       continue;
+    }
+    if first {
+      first = false;
+    } else {
+      rv.push(' ');
     }
     rv = rv + "<li>" + item + "</li>";
   }
@@ -221,13 +227,13 @@ fn main() {
   // matter whether the user has simp or trad as primary)
   opts.optopt(
       "", "hanping_words",
-      concat!("Instead of building a deck of HSK words, use WORDLIST file exported from the ", 
+      concat!("Instead of building a deck of HSK words, use WORDLIST file exported from the ",
               "Hanping Android app. The app must be set to display entries as trad [simp] when ",
               "the export is performed."),
       "WORDLIST");
   opts.optopt(
       "", "extra_entries",
-      concat!("When building the deck, use the dictionary entries in ENTRIES_FILE in addition to ", 
+      concat!("When building the deck, use the dictionary entries in ENTRIES_FILE in addition to ",
               "the CC-CEDICT dictionary. ENTRIES_FILE must be in CC-CEDICT format. Currently ",
               "ignored unless --hanping_words is passed."),
       "ENTRIES_FILE");
