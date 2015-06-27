@@ -158,11 +158,15 @@ fn make_defs_html(items: &Vec<&str>) -> String {
   return rv + "</ol>";
 }
 
-fn make_clfr_str(clfr: &cedict::Classifier) -> String {
+fn make_clfr_str(clfr: &cedict::Classifier, trad_first: bool) -> String {
  let char = if clfr.simp == clfr.trad {
    clfr.simp.to_string()
  } else {
-   clfr.simp.to_string() + "|" + clfr.trad
+   if trad_first {
+     clfr.trad.to_string() + "|" + clfr.simp
+   } else {
+     clfr.simp.to_string() + "|" + clfr.trad
+   }
  };
  char + "(" + &prettify_pinyin(clfr.pinyin) + ")"
 }
@@ -178,14 +182,20 @@ fn print_usage(program: &str, opts: getopts::Options) {
 
 fn get_pinyin_dupes<'a, 'b>(notes: &'a Vec<chinese_note::ChineseNote<'b>>)
     -> HashMap<String, Vec<&'a cedict::Entry<'b>>> {
+  // returns map of pinyin (e.g. "duo1 me5") to words with that Pinyin
   let mut rv = HashMap::<String, Vec<&'a cedict::Entry<'b>>>::new();
   for note in notes {
-    let key = note.ce.pinyin.to_ascii_lowercase();
-    if rv.contains_key(&key) {
-      rv.get_mut(&key).unwrap().push(&note.ce);
-    } else {
-      let v = vec!(&note.ce);
-      rv.insert(key, v);
+    let mut pinyins = vec!(note.ce.pinyin.to_ascii_lowercase());
+    if note.ce.tw_pinyin != "" {
+      pinyins.push(note.ce.tw_pinyin.to_ascii_lowercase());
+    }
+    for pinyin in pinyins {
+      if rv.contains_key(&pinyin) {
+        rv.get_mut(&pinyin).unwrap().push(&note.ce);
+      } else {
+        let v = vec!(&note.ce);
+        rv.insert(pinyin, v);
+      }
     }
   }
   rv
@@ -199,23 +209,29 @@ fn get_pinyin_dupe_string_fn<'a, 'b>(notes: &'a Vec<chinese_note::ChineseNote<'b
   Box::new(move |entry| {
     let mut first = true;
     let mut rv = "".to_string();
-    if !dupes_map.contains_key(&entry.pinyin.to_ascii_lowercase()) {
-      println!("warning: {} not in dupes_map", entry.pinyin.to_ascii_lowercase());
-      return rv;
+    let mut pinyins = vec!(entry.pinyin.to_ascii_lowercase());
+    if entry.tw_pinyin != "" {
+      pinyins.push(entry.tw_pinyin.to_ascii_lowercase());
     }
-    for dupe in dupes_map.get(&entry.pinyin.to_ascii_lowercase()).unwrap() {
-      if **dupe == *entry { continue; }
-      if !first {
-        rv.push(en_space);
+    for pinyin in pinyins {
+      if !dupes_map.contains_key(&pinyin) {
+        println!("warning: {} not in dupes_map", entry.pinyin.to_ascii_lowercase());
+        return rv;
       }
-      rv.push_str("<span class=\"nobr\">");
-      rv.push_str(&dupe.simp);
-      if dupe.trad != dupe.simp {
-        rv.push('|');
-        rv.push_str(&dupe.trad);
+      for dupe in dupes_map.get(&pinyin).unwrap() {
+        if **dupe == *entry { continue; }
+        if !first {
+          rv.push(en_space);
+        }
+        rv.push_str("<span class=\"nobr\">");
+        rv.push_str(&dupe.simp);
+        if dupe.trad != dupe.simp {
+          rv.push('|');
+          rv.push_str(&dupe.trad);
+        }
+        rv.push_str("</span>");
+        first = false;
       }
-      rv.push_str("</span>");
-      first = false;
     }
     rv
   })
@@ -237,7 +253,11 @@ fn main() {
               "the CC-CEDICT dictionary. ENTRIES_FILE must be in CC-CEDICT format. Currently ",
               "ignored unless --hanping_words is passed."),
       "ENTRIES_FILE");
-  opts.optflag("h", "help", "print this help menu");
+  opts.optflag(
+      "t", "traditional",
+      concat!("Display traditional characters before simplified, and Taiwanese pronunciations ",
+              "before mainland."));
+  opts.optflag("h", "help", "Print this help menu");
 
   let args: Vec<String> = std::env::args().collect();
   let program: String = args[0].clone();
@@ -285,8 +305,22 @@ fn main() {
   } else {
     "kerrick hsk"
   };
+  let templates_yaml = include_str!("templates.yaml")
+      .replace("CHARACTER",
+               if parsed_opts.opt_present("traditional") {
+                 "{{#Traditional}}{{Traditional}}|{{/Traditional}}{{Simplified}}"
+               } else {
+                 "{{Simplified}}{{#Traditional}}|{{Traditional}}{{/Traditional}}"
+               })
+      .replace("PINYIN",
+               if parsed_opts.opt_present("traditional") {
+                 "{{#Taiwan Pinyin}}{{Taiwan Pinyin}} | {{/Taiwan Pinyin}}{{Pinyin}}"
+               } else {
+                 "{{Pinyin}}{{#Taiwan Pinyin}} | {{Taiwan Pinyin}}{{/Taiwan Pinyin}}"
+               });
+
   let apkg = anki::AnkiPackage::new(
-      title, include_str!("flds.json"), include_str!("templates.yaml"), include_str!("card.css"));
+      title, include_str!("flds.json"), &templates_yaml, include_str!("card.css"));
   let pinyin_not_hint = get_pinyin_dupe_string_fn(&notes);
 
   for note in &notes {
@@ -302,16 +336,25 @@ fn main() {
             + "\x1f" + &trad
             + "\x1f" + &prettify_pinyin(note.ce.pinyin)
             + "\x1f" + &make_defs_html(&note.ce.defs)
-            + "\x1f" + &note.ce.clfrs.iter().map(make_clfr_str).collect::<Vec<_>>().connect(", ")
+            + "\x1f" + &note.ce.clfrs.iter()
+                .map(|c| make_clfr_str(c, parsed_opts.opt_present("traditional")))
+                .collect::<Vec<_>>().connect(", ")
             + "\x1f" + &prettify_pinyin(note.ce.tw_pinyin)
             + "\x1f" + &pinyin_not_hint(&note.ce)),
         &note.ce.simp);
-    for ord in 0..4 {
-      if ord == 2 && trad == "" {
-        continue;
+    apkg.add_card(note_id, 0);
+    if trad == "" {
+      apkg.add_card(note_id, 1);
+    } else {
+      if parsed_opts.opt_present("traditional") {
+        apkg.add_card(note_id, 2);
+        apkg.add_card(note_id, 1);
+      } else {
+        apkg.add_card(note_id, 1);
+        apkg.add_card(note_id, 2);
       }
-      apkg.add_card(note_id, ord);
     }
+    apkg.add_card(note_id, 3);
   }
   // Set due = id + 1
   apkg.conn.execute_batch("UPDATE cards SET due = id + 1;").unwrap();
