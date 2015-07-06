@@ -23,7 +23,7 @@ pub fn get_chinese_notes<'a>(wordlist: &'a str, extra_entries: &'a str)
       // entries[entries.len() - 1] causes it to prefer entries with lowercase pinyin, e.g.
       //   乾 干 [gan1] /dry/clean/in vain/dried food/foster/adoptive/to ignore/
       // will be preferred over
-      // 乾 干 [Gan1] /surname Gan/
+      //   乾 干 [Gan1] /surname Gan/
       rv.push(chinese_note::ChineseNote{ce: entries[entries.len() - 1].clone(), tags: vec!()});
     }
   }
@@ -81,51 +81,8 @@ pub fn parse_line(line: &str) -> Result<ParsedLine, String> {
     }
     rest.slice_unchecked(0, bytes_seen)
   };
-  rv.pinyin = pinyin_to_ascii(&formatted_pinyin);
+  rv.pinyin = cedict::pinyin_to_ascii(&formatted_pinyin);
   Ok(rv)
-}
-
-// TODO: can we make this only pub for testing?
-pub fn pinyin_to_ascii(pinyin: &str) -> String {
-  let data = [
-      ['ā', 'á', 'ǎ', 'à', 'a'],
-      ['ē', 'é', 'ě', 'è', 'e'],
-      ['ī', 'í', 'ǐ', 'ì', 'i'],
-      ['ō', 'ó', 'ǒ', 'ò', 'o'],
-      ['ū', 'ú', 'ǔ', 'ù', 'u'],
-      ['ǖ', 'ǘ', 'ǚ', 'ǜ', 'ü'],
-  ];
-  let mut rv = "".to_string();
-  let mut tone = 5;
-
-  'process_char: for ch in pinyin.chars() {
-    if tone == 5 {
-      for r in 0..6 {
-        // we skip checking the last column and let this case fall-through to the below
-        // the result is he same either way
-        for c in 0..4 {
-          if data[r][c] == ch {
-            tone = (c + 1) as isize;
-            if r == 5 {
-              rv.push_str("u:");
-            } else {
-              rv.push(data[r][4]);
-            }
-            continue 'process_char;
-          }
-        }
-      }
-    }
-    if ch == ' ' {
-      rv.push_str(&tone.to_string());
-      tone = 5;
-    }
-    rv.push(ch);
-  }
-  if tone != -1 {
-    rv.push_str(&tone.to_string());
-  }
-  rv
 }
 
 #[cfg(test)]
@@ -142,16 +99,6 @@ mod tests {
   }
 
   #[test]
-  fn ouer_line_parses_correctly() {
-    // tests case where tone mark is not on last vowel
-    let line = "偶爾 [-尔]        ǒu ěr            occasionally • once in a while • sometimes";
-    let parsed_line = parse_line(line).unwrap();
-    assert_eq!(parsed_line.trad, "偶爾");
-    assert_eq!(parsed_line.simp, "偶尔");
-    assert_eq!(parsed_line.pinyin, "ou3 er3");
-  }
-
-  #[test]
   fn cu_line_parses_correctly() {
     // tests case where trad == simp, and there is exactly one space between records
     let line = "粗 cū coarse • rough • thick (for cylindrical objects) • unfinished • vulgar • rude • crude";
@@ -159,10 +106,5 @@ mod tests {
     assert_eq!(parsed_line.trad, "粗");
     assert_eq!(parsed_line.simp, "粗");
     assert_eq!(parsed_line.pinyin, "cu1");
-  }
-
-  #[test]
-  fn test_pinyin_to_ascii() {
-    assert_eq!(pinyin_to_ascii("hē diǎn lǜ chá ba"), "he1 dian3 lu:4 cha2 ba5");
   }
 }

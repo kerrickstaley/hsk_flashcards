@@ -190,3 +190,62 @@ impl<'a> Dict<'a> {
     self.search(DictSearchParams{simp: Some(simp), trad: None, pinyin: None})
   }
 }
+
+// TODO: can we make this only pub for testing?
+pub fn pinyin_to_ascii(pinyin: &str) -> String {
+  let data = [
+      ['ā', 'á', 'ǎ', 'à', 'a'],
+      ['ē', 'é', 'ě', 'è', 'e'],
+      ['ī', 'í', 'ǐ', 'ì', 'i'],
+      ['ō', 'ó', 'ǒ', 'ò', 'o'],
+      ['ū', 'ú', 'ǔ', 'ù', 'u'],
+      ['ǖ', 'ǘ', 'ǚ', 'ǜ', 'ü'],
+  ];
+  let mut rv = "".to_string();
+  let mut tone = 5;
+
+  'process_char: for ch in pinyin.chars() {
+    if tone == 5 {
+      for r in 0..6 {
+        // we skip checking the last column and let this case fall-through to the below
+        // the result is he same either way
+        for c in 0..4 {
+          if data[r][c] == ch {
+            tone = (c + 1) as isize;
+            if r == 5 {
+              rv.push_str("u:");
+            } else {
+              rv.push(data[r][4]);
+            }
+            continue 'process_char;
+          }
+        }
+      }
+    }
+    if ch == ' ' {
+      rv.push_str(&tone.to_string());
+      tone = 5;
+    }
+    rv.push(ch);
+  }
+  if tone != -1 {
+    rv.push_str(&tone.to_string());
+  }
+  rv
+}
+
+#[cfg(test)]
+mod tests {
+  use super::*;
+
+  #[test]
+  fn test_pinyin_to_ascii() {
+    assert_eq!(pinyin_to_ascii("hē diǎn lǜ chá ba"), "he1 dian3 lu:4 cha2 ba5");
+  }
+
+  #[test]
+  fn test_tone_not_on_last_vowel() {
+    // tests case where tone mark is not on last vowel
+    assert_eq!(pinyin_to_ascii("ǒu ěr"), "ou3 er3");
+  }
+}
