@@ -201,7 +201,8 @@ fn get_pinyin_dupes<'a, 'b>(notes: &'a Vec<chinese_note::ChineseNote<'b>>)
   rv
 }
 
-fn get_pinyin_dupe_string_fn<'a, 'b>(notes: &'a Vec<chinese_note::ChineseNote<'b>>)
+fn get_pinyin_dupe_string_fn<'a, 'b>(
+    notes: &'a Vec<chinese_note::ChineseNote<'b>>, trad_first: bool)
     -> Box<Fn(&cedict::Entry) -> String + 'a> {
   let dupes_map = get_pinyin_dupes(&notes);
   // separate items with en spaces, to make them slightly easier to read
@@ -224,10 +225,18 @@ fn get_pinyin_dupe_string_fn<'a, 'b>(notes: &'a Vec<chinese_note::ChineseNote<'b
           rv.push(en_space);
         }
         rv.push_str("<span class=\"nobr\">");
-        rv.push_str(&dupe.simp);
+        if trad_first {
+          rv.push_str(&dupe.trad);
+        } else {
+          rv.push_str(&dupe.simp)
+        }
         if dupe.trad != dupe.simp {
           rv.push('|');
-          rv.push_str(&dupe.trad);
+          if trad_first {
+            rv.push_str(&dupe.simp);
+          } else {
+            rv.push_str(&dupe.trad);
+          }
         }
         rv.push_str("</span>");
         first = false;
@@ -321,7 +330,7 @@ fn main() {
 
   let apkg = anki::AnkiPackage::new(
       title, include_str!("flds.json"), &templates_yaml, include_str!("card.css"));
-  let pinyin_not_hint = get_pinyin_dupe_string_fn(&notes);
+  let pinyin_not_hint = get_pinyin_dupe_string_fn(&notes, parsed_opts.opt_present("traditional"));
 
   for note in &notes {
     let trad = if note.ce.simp != note.ce.trad { note.ce.trad } else { "" };
