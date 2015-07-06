@@ -37,19 +37,6 @@ fn get_hsk_words() -> Vec<HskWord> {
   rv
 }
 
-fn starts_with(s: &str, prefix: &str) -> bool {
-  let mut sc = s.chars();
-  let mut prefixc = prefix.chars();
-  loop {
-    match (sc.next(), prefixc.next()) {
-      (Some(c1), Some(c2)) => if c1 != c2 { return false; },
-      (Some(_), None) => { return true; },
-      (None, Some(_)) => { return false; },
-      (None, None) => { return true; },
-    }
-  }
-}
-
 fn is_good(entry: &cedict::Entry) -> bool {
   let reference_re = regex!(r"^variant of |old variant of |^see [^ ]+\[[^\]]+\]$");
   if reference_re.is_match(entry.defs[0]) {
@@ -157,7 +144,7 @@ fn best_entry<'a>(word: &HskWord,
     }
   }
 
-  if starts_with(rv.defs[0], "erhua variant of ") {
+  if rv.defs[0].starts_with("erhua variant of ") {
     let mut actual_simp = "".to_string();
     // TODO: this is terrible, just terrible. Tixif!
     let mut prev = '\0';
