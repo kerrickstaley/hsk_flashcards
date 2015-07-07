@@ -13,6 +13,7 @@ mod cedict;
 mod chinese_note;
 mod hanping;
 mod hsk;
+mod preferred_entry;
 
 use crypto::digest::Digest;
 use std::ascii::AsciiExt;
