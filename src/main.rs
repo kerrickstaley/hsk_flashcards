@@ -292,7 +292,7 @@ fn main() {
   }
 
   let mut hanping_words = String::new();
-  let notes = if parsed_opts.opt_present("hanping_words") {
+  let (notes, title, guid_prefix) = if parsed_opts.opt_present("hanping_words") {
     match std::fs::File::open(parsed_opts.opt_str("hanping_words").unwrap())
         .and_then(|mut f| f.read_to_string(&mut hanping_words)) {
       Ok(_) => (),
@@ -300,20 +300,14 @@ fn main() {
         panic!("Could not open hanping_words, or it was not unicode: {}", e);
       }
     }
-    // TODO: this will silently drop lines in extra_entries if they're malformed
-    hanping::get_chinese_notes(&hanping_words, &extra_entries)
+    (
+        // TODO: this will silently drop lines in extra_entries if they're malformed
+        hanping::get_chinese_notes(&hanping_words, &extra_entries),
+        "Hanping",
+        "kerrick hanping",
+    )
   } else {
-    hsk::get_chinese_notes()
-  };
-  let title = if parsed_opts.opt_present("hanping_words") {
-    "Hanping"
-  } else {
-    "HSK"
-  };
-  let guid_prefix = if parsed_opts.opt_present("hanping_words") {
-    "kerrick hanping"
-  } else {
-    "kerrick hsk"
+    (hsk::get_chinese_notes(), "HSK", "kerrick hsk")
   };
   let templates_yaml = include_str!("templates.yaml")
       .replace("CHARACTER",
