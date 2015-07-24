@@ -67,6 +67,9 @@ fn parse_entry<'a>(entry_str: &'a str) -> Option<Entry<'a>> {
             i += 1;
           }
         }
+      } else if defs[i].starts_with("also pr. ") {
+        // TODO: do we want to include this information elsewhere on the card?
+        defs.remove(i);
       } else {
         i += 1;
       }
