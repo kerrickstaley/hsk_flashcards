@@ -2,6 +2,7 @@
 name = "hsk_flashcards"
 version = "0.0.1"
 dependencies = [
+ "csv 0.14.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "getopts 0.2.11 (registry+https://github.com/rust-lang/crates.io-index)",
  "regex 0.1.38 (registry+https://github.com/rust-lang/crates.io-index)",
  "regex_macros 0.1.20 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -24,6 +25,20 @@ dependencies = [
 name = "bitflags"
 version = "0.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
+
+[[package]]
+name = "byteorder"
+version = "0.3.11"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+
+[[package]]
+name = "csv"
+version = "0.14.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "byteorder 0.3.11 (registry+https://github.com/rust-lang/crates.io-index)",
+ "rustc-serialize 0.3.15 (registry+https://github.com/rust-lang/crates.io-index)",
+]
 
 [[package]]
 name = "gcc"

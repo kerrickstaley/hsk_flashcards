@@ -13,6 +13,7 @@ mod cedict;
 mod chinese_note;
 mod hanping;
 mod hsk;
+mod integrated;
 mod preferred_entry;
 
 use crypto::digest::Digest;
@@ -257,6 +258,10 @@ fn main() {
               "Hanping Android app. The app must be set to display entries as trad [simp] when ",
               "the export is performed."),
       "WORDLIST");
+  opts.optflag(
+      "", "integrated",
+      concat!("Instead of building a deck of HSK words, use the words from Cheng & Tsui's ",
+              "Integrated Chinese series."));
   opts.optopt(
       "", "extra_entries",
       concat!("When building the deck, use the dictionary entries in ENTRIES_FILE in addition to ",
@@ -306,9 +311,12 @@ fn main() {
         "Hanping",
         "kerrick hanping",
     )
+  } else if parsed_opts.opt_present("integrated") {
+    (integrated::get_chinese_notes(), "Integrated Chinese", "kerrick integrated")
   } else {
     (hsk::get_chinese_notes(), "HSK", "kerrick hsk")
   };
+
   let templates_yaml = include_str!("templates.yaml")
       .replace("CHARACTER",
                if parsed_opts.opt_present("traditional") {

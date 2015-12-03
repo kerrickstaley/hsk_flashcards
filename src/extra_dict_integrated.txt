@@ -1,0 +1,127 @@
+# some content taken from http://resources.allsetlearning.com/; these entries are marked CC BY-NC-SA
+# TODO: add parentheses to pinyin
+找(錢) 找(钱) [zhao3 qian2] /to give change/
+(車)站 (车)站 [che1 zhan4] /rail station/bus stop/CL:處|处[chu4],個|个[ge4]/
+極(了) 极(了) [ji2 le5] /extremely/exceedingly/
+賣完(了) 卖完(了) [mai4 wan2] /to be sold out/
+卡(片) 卡(片) [ka3 pian4] /card/
+打折(扣) 打折(扣) [da3 zhe2 kou4] /to give a discount/to be of less value than anticipated/
+# TODO: add to CEDICT
+叫(菜) 叫(菜) [jiao4 cai4] /to order food/
+純棉(的) 纯棉(的) [chun2 mian2] /pure cotton/100% cotton/
+# TODO: not sure this is correct
+(玩)膩(了) (玩)腻(了) [wan2 ni4 le5] /finished playing/
+賺(錢) 赚(钱) [zhuan4 qian2] /to earn money/moneymaking/
+太…了 太…了 [tai4 … le5] /very …/
+到…去 到…去 [dao4 … qu4] /to go to …/
+別客氣 別客气 [bie2 ke4 qi5] /you're welcome/lit. don't be so polite/
+有一點 有一点 [you3 yi1 dian3] /a little (of something)/to have a little (of something)/
+一邊…一邊 一边…一边 [yi1 bian1 … yi1 bian1] /while doing …, also doing …/doing two things at the same time/
+…的時候 …的时候 [de5 shi2 hou5] /at the time of …/
+除了…以外 除了…以外 [chu2 le5 … yi3 wai4] /in addition to …/
+意文 意文 [yi4 wen2] /Italian (language)/
+不但…而且… 不但…而且… [bu4 dan4 … er2 qie3 …] /not only … but also …/
+又…又… 又…又… [you4 … you4 …] /(both) … and …/
+其他的 其他的 [qi2 ta1 de5] /other/(sth or sb) else/the rest/
+# TODO: not sure this is correct
+開到 开到 [kai1 dao4] /to drive to/
+一…就… 一…就… [yi1 … jiu4 …] /as soon as …, (then) …/
+# TODO not sure this is correct
+過生日 过生日 [guo4 sheng1 ri4] /to celebrate someone's birthday/to have a birthday (that is the indicated day)/
+說到 说到 [shuo1 dao4] /to state (the quoted words)/
+海輪 海轮 [hai3 lun2] /seagoing vessel/
+對…過敏 对…过敏 [dui4 … guo4 min3] /to be allergic to …/
+什麼…都 什么…都 [shen2 me5 … dou1] /all of … (are)/every single one of … (is)/
+越…越… 越…越… [yue4 … yue4 …] /the more …, the more …/
+# 多…哪 TODO
+上大學 上大学 [shang4 da4 xue2] /to attend university/
+看不出來 看不出来 [kan4 bu4 chu5 lai5] /can't see/can't discern/
+要是…就… 要是…就… [yao4 shi4 … jiu4 …] /if …, then …]
+中國民航 中国民航 [zhong1 guo2 min2 hang2] /Chinese civil aviation/
+幾個月 几个月 [ji3 ge5 yue4] /a few months/
+# TODO: fix below
+如果…的話 如果…的话 [ru2 guo3 … de5 hua4] /if …/hypothetically speaking, if …/
+# 要…了 TODO
+猜對了 猜对了 [cai1 dui4 le5] /to guess correctly/
+真的 真的 [zhen1 de5] /really/truly/indeed/
+過幾天 过几天 [guo4 ji3 tian1] /after a few days/a few days later/
+一刻鐘 一刻钟 [yi1 ke4 zhong1] /a quarter hour/
+T恤衫 T恤衫 [T xu4 shan1] /t-shirt/
+# CC BY-NC-SA
+非…不可 非…不可 [fei1 … bu4 ke3] /must …/is determined to …/
+東亞史 东亚史 [dong1 ya4 shi3] /East Asian history/
+學到 学到 [xue2 dao4] /to learn successfully/
+對來…說 对…来说 [dui4 … lai2 shuo1] /according to …/
+選好 选好 [xuan3 hao3] /selected/
+要麼…要麼… 要么…要么… [yao4 me5 … yao4 me5 …] /either … or …/
+飯錢 饭钱 [fan4 qian2] /money for a meal/
+省下來 省下来 [sheng3 xia4 lai5] /saved/
+睡不好覺 睡不好觉 [shui4 bu4 hao3 jiao4] /didn't sleep well/
+受影響 受影响 [shou4 ying3 xiang3] /to have an effect/
+翻到 翻到 [fan1 dao4] /turn to (a page)/
+廣告欄 广告栏 [guang3 gao4 lan2] /small billboard (e.g. in a bus stop)/
+戯迷 戏迷 [xi4 mi2] /person interested in Chinese opera/
+喝醉酒 喝醉酒 [he1 zui4 jiu3] /to get drunk/
+屋里 屋里 [wu1 li3] /house/home/
+憋死 憋死 [bie1 si3] /to suffocate/
+商業片 商业片 [shang1 ye4 pian4] /commercial films/
+閑著沒事 闲着没事 [xian2 zhe5 mei2 shi4] /to have nothing to do/
+小男孩 小男孩 [xiao3 nan2 hai2] /little boy/
+芝麻街 芝麻街 [zhi1 ma5 jie1] /Seasame Street/
+東岸 东岸 [dong1 an4] /East coast/
+西岸 西岸 [xi1 an4] /West coast/
+郵電局 邮电局 [you2 dian4 ju2] /post office/
+#…过去
+#邮简
+#来对了
+#陆空联运
+#寄丢了
+#中山路
+#挤下来
+#体会到
+#别具风格
+#狠狠地
+#古城墙
+#大人物
+#夫子庙
+#秦淮河
+#玄武湖
+#华清池
+#大官
+#表面上
+#忧国忧民
+#投江
+#…之一
+#倒也是
+#世界记录
+#每当…时
+#有益于
+#定下来
+#表嫂
+#画画
+#惠敏
+#指腹为婚
+#急病
+#心脏科
+#动手术
+#打基础
+#乐坏了
+#尊师重道
+#乱放
+#收好
+#舞刀弄枪
+#贫富不均
+#价值观念
+#猴脑
+#裘皮
+#珍稀动物
+#黑白分明
+#互相矛盾
+#在…同时
+#原来如此
+#松树林
+#难办
+#污染源
+#煤炉
+#需求量
+#日益加剧
