@@ -99,10 +99,13 @@ fn prettify_pinyin(s: &str) -> String {
     let mut toned = false;
 
     let mut syl_iter = syl.chars();
-    // curr iterates over syl[0] to syl[syl.len() - 1], and next is the char
-    // after curr
+    // curr iterates over syl[0] to syl[syl.len() - 2], i.e. everything except the tone,
+    // and next is the char after curr
     let mut curr = syl_iter.next().unwrap();
     for next in syl_iter {
+      // pinyin should be be lowercase to avoid giving hints (e.g. Huang2 He2 hints that it's a proper noun)
+      curr = curr.to_ascii_lowercase();
+
       if curr == 'u' && next == ':' {
         curr = 'ü';
         continue;
@@ -131,7 +134,7 @@ fn prettify_pinyin(s: &str) -> String {
 #[test]
 fn test_prettify_pinyin() {
   assert_eq!(
-      prettify_pinyin("he1 dian3 lu:4 cha2 ba5"),
+      prettify_pinyin("He1 dian3 lu:4 cha2 ba5"),
       concat!(
           "<span class=\"tone1\">hē</span>",
           " <span class=\"tone3\">diǎn</span>",
