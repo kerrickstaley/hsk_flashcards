@@ -323,9 +323,9 @@ fn main() {
   let templates_yaml = include_str!("templates.yaml")
       .replace("CHARACTER",
                if parsed_opts.opt_present("traditional") {
-                 "{{#Traditional}}{{Traditional}}|{{/Traditional}}{{Simplified}}"
+                 "{{#Traditional}}<span class=\"nobr\">{{Traditional}}</span>|{{/Traditional}}<span class=\"nobr\">{{Simplified}}</span>"
                } else {
-                 "{{Simplified}}{{#Traditional}}|{{Traditional}}{{/Traditional}}"
+                 "<span class=\"nobr\">{{Simplified}}</span>{{#Traditional}}|<span class=\"nobr\">{{Traditional}}</span>{{/Traditional}}"
                })
       .replace("PINYIN",
                if parsed_opts.opt_present("traditional") {
