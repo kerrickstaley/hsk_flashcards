@@ -1,3 +1,4 @@
+# DEPRECATION NOTICE: This project is deprecated and has been superseded by [Chinese-Prestudy](https://github.com/kerrickstaley/Chinese-Prestudy)
 # hsk_flashcards
 Program (in Rust) to generate Anki flashcards for the Hanyu Shuiping Kaoshi (a Chinese language proficiency test).
 
